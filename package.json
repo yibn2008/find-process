@@ -1,7 +1,7 @@
 {
   "name": "find-process",
   "version": "0.0.1",
-  "description": "find process info by port/name/etc.",
+  "description": "find process info by port/pid/name etc.",
   "main": "index.js",
   "scripts": {
     "test": "mocha test/*.test.js"
@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/yibn2008/find-process#readme",
   "dependencies": {
-    "sudo": "~1.0.3"
+    "sudo": "^1.0.3"
   },
   "devDependencies": {
     "mocha": "^2.3.4"

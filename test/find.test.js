@@ -2,7 +2,7 @@
 * @Author: zoujie.wzj
 * @Date:   2016-01-24 10:35:16
 * @Last Modified by:   Zoujie
-* @Last Modified time: 2016-01-24 15:04:07
+* @Last Modified time: 2016-01-24 15:11:49
 */
 
 'use strict';
@@ -21,8 +21,9 @@ describe('Find process test', function () {
           assert(list.length === 1);
           assert.equal(process.pid, list[0].pid);
 
-          listen.close();
-          done();
+          listen.close(function () {
+            done();
+          });
         }, function (err) {
           console.error(err.stack || err);
         })
@@ -33,16 +34,18 @@ describe('Find process test', function () {
     let file = path.join(__dirname, 'fixtures/child_process.js');
     let cps = cp.spawn(process.execPath, [file]);
 
+    cps.on('exit', function () {
+      done();
+    });
+
     find('pid', cps.pid)
       .then(function (list) {
         assert(list.length === 1);
         assert.equal(cps.pid, list[0].pid);
 
-        cps.kill(function () {
-          done();
-        });
+        cps.kill();
       }, function (err) {
-        console.error(err.stack || err);
+        assert(false, err.stack || err);
       });
   })
 
@@ -50,16 +53,18 @@ describe('Find process test', function () {
     let file = path.join(__dirname, 'fixtures/child_process.js');
     let cps = cp.spawn(process.execPath, [file, 'AAABBBCCC']);
 
+    cps.on('exit', function () {
+      done();
+    });
+
     find('name', 'AAABBBCCC')
       .then(function (list) {
         assert(list.length === 1);
         assert.equal(cps.pid, list[0].pid);
 
-        cps.kill(function () {
-          done();
-        });
+        cps.kill();
       }, function (err) {
-        console.error(err.stack || err);
+        assert(false, err.stack || err);
       });
   });
 });

@@ -3,7 +3,7 @@
 ## Mac OSX (darwin)
 
 ```
-$ netstat -anv -p TCP
+$ netstat -anv
 Active Internet connections (including servers)
 Proto Recv-Q Send-Q  Local Address          Foreign Address        (state)     rhiwat shiwat    pid   epid
 tcp4       0      0  10.16.43.243.55669     10.20.13.51.8000       ESTABLISHED 131346 131768    422      0
@@ -16,7 +16,7 @@ tcp46      0      0  *.8888                 *.*                    LISTEN      1
 ## Windows (win32)
 
 ```
-C:\Users\xxx>netstat -ano -p TCP
+C:\Users\xxx>netstat -ano
 
 活动连接
 
@@ -41,7 +41,7 @@ C:\Users\xxx>netstat -ano -p TCP
 ## Ubuntu (linux)
 
 ```
-$ sudo netstat -nlp
+$ sudo netstat -tunlp
 [sudo] password for xxx:
 Active Internet connections (only servers)
 Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name

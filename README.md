@@ -1,4 +1,4 @@
-# find-process
+# find-process [![Build Status](https://travis-ci.org/yibn2008/find-process.svg?branch=master)](https://travis-ci.org/yibn2008/find-process)
 
 With find-process, you can:
 

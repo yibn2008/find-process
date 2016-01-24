@@ -1,8 +1,8 @@
 /*
 * @Author: zoujie.wzj
 * @Date:   2016-01-24 10:35:16
-* @Last Modified by:   zoujie.wzj
-* @Last Modified time: 2016-01-24 11:10:49
+* @Last Modified by:   Zoujie
+* @Last Modified time: 2016-01-24 14:08:54
 */
 
 'use strict';
@@ -23,6 +23,8 @@ describe('Find process test', function () {
 
           listen.close();
           done();
+        }, function (err) {
+          console.error(err.stack || err);
         })
     });
   })
@@ -38,6 +40,8 @@ describe('Find process test', function () {
 
         cps.kill();
         done();
+      }, function (err) {
+        console.error(err.stack || err);
       });
   })
 
@@ -52,6 +56,8 @@ describe('Find process test', function () {
 
         cps.kill();
         done();
+      }, function (err) {
+        console.error(err.stack || err);
       });
   });
 });

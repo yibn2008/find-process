@@ -2,7 +2,7 @@
 * @Author: zoujie.wzj
 * @Date:   2016-01-24 10:35:16
 * @Last Modified by:   Zoujie
-* @Last Modified time: 2016-01-24 14:08:54
+* @Last Modified time: 2016-01-24 15:04:07
 */
 
 'use strict';
@@ -38,8 +38,9 @@ describe('Find process test', function () {
         assert(list.length === 1);
         assert.equal(cps.pid, list[0].pid);
 
-        cps.kill();
-        done();
+        cps.kill(function () {
+          done();
+        });
       }, function (err) {
         console.error(err.stack || err);
       });
@@ -54,8 +55,9 @@ describe('Find process test', function () {
         assert(list.length === 1);
         assert.equal(cps.pid, list[0].pid);
 
-        cps.kill();
-        done();
+        cps.kill(function () {
+          done();
+        });
       }, function (err) {
         console.error(err.stack || err);
       });

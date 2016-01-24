@@ -2,7 +2,7 @@
 * @Author: zoujie.wzj
 * @Date:   2016-01-24 10:35:16
 * @Last Modified by:   Zoujie
-* @Last Modified time: 2016-01-24 15:46:02
+* @Last Modified time: 2016-01-24 15:51:37
 */
 
 'use strict';
@@ -19,52 +19,49 @@ describe('Find process test', function () {
       .then(function () {
         return find('port', 12345)
           .then(function (list) {
+            listen.close();
+
             assert(list.length === 1);
             assert.equal(process.pid, list[0].pid);
-
-            listen.close();
           }, function (err) {
-            assert(false, err.stack || err);
-
             listen.close();
+
+            assert(false, err.stack || err);
           });
       });
   });
 
-  it('should find process of pid', function (done) {
+  it('should find process of pid', function () {
     let file = path.join(__dirname, 'fixtures/child_process.js');
     let cps = cp.spawn(process.execPath, [file]);
 
-    cps.on('exit', function () {
-      done();
-    });
-
-    find('pid', cps.pid)
+    return find('pid', cps.pid)
       .then(function (list) {
+        cps.kill();
+
         assert(list.length === 1);
         assert.equal(cps.pid, list[0].pid);
-
-        cps.kill();
       }, function (err) {
+        cps.kill();
+
         assert(false, err.stack || err);
       });
   });
 
-  it('should find process list matched given name', function (done) {
+  it('should find process list matched given name', function () {
     let file = path.join(__dirname, 'fixtures/child_process.js');
     let cps = cp.spawn(process.execPath, [file, 'AAABBBCCC']);
 
-    cps.on('exit', function () {
-      done();
-    });
-
-    find('name', 'AAABBBCCC')
+    return find('name', 'AAABBBCCC')
       .then(function (list) {
+        cps.kill();
+
         assert(list.length === 1);
         assert.equal(cps.pid, list[0].pid);
 
-        cps.kill();
       }, function (err) {
+        cps.kill();
+
         assert(false, err.stack || err);
       });
   });

@@ -1,4 +1,4 @@
-# find-process 
+# find-process
 
 With find-process, you can:
 
@@ -46,7 +46,7 @@ Promise<Array> find(type, value)
 
 The return value of find-process is Promise, if you use **co** you can use `yield find(type, value)` directly.
 
-The value of resolved promise is an array list of process:
+The resolved value of promise is an array list of process:
 
 ```
 [{

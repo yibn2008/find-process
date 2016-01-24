@@ -14,6 +14,7 @@
   "keywords": [
     "node",
     "process",
+    "pid",
     "port"
   ],
   "author": "zoujie <yibn2008@gmail.com>",

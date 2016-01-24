@@ -2,7 +2,7 @@
 * @Author: zoujie.wzj
 * @Date:   2016-01-24 10:35:16
 * @Last Modified by:   Zoujie
-* @Last Modified time: 2016-01-24 15:11:49
+* @Last Modified time: 2016-01-24 15:14:19
 */
 
 'use strict';
@@ -21,9 +21,8 @@ describe('Find process test', function () {
           assert(list.length === 1);
           assert.equal(process.pid, list[0].pid);
 
-          listen.close(function () {
-            done();
-          });
+          listen.close();
+          done();
         }, function (err) {
           console.error(err.stack || err);
         })

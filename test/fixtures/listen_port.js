@@ -1,8 +1,8 @@
 /*
 * @Author: zoujie.wzj
 * @Date:   2016-01-24 10:39:27
-* @Last Modified by:   zoujie.wzj
-* @Last Modified time: 2016-01-24 10:49:00
+* @Last Modified by:   Zoujie
+* @Last Modified time: 2016-01-24 15:44:14
 */
 
 'use strict';
@@ -13,8 +13,16 @@ let server = http.createServer(function () {
   // empty
 });
 
-module.exports = function (port, callback) {
-  server.listen(port, callback);
+module.exports = function (port) {
+  return new Promise((resolve, reject) => {
+    server.listen(port, function (err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
 };
 
 module.exports.close = function () {

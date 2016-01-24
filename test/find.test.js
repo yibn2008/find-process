@@ -2,7 +2,7 @@
 * @Author: zoujie.wzj
 * @Date:   2016-01-24 10:35:16
 * @Last Modified by:   Zoujie
-* @Last Modified time: 2016-01-24 15:14:19
+* @Last Modified time: 2016-01-24 15:46:02
 */
 
 'use strict';
@@ -14,20 +14,22 @@ const find = require('..');
 const listen = require('./fixtures/listen_port');
 
 describe('Find process test', function () {
-  it('should find process of listenning port', function (done) {
-    listen(12345, function () {
-      find('port', 12345)
-        .then(function (list) {
-          assert(list.length === 1);
-          assert.equal(process.pid, list[0].pid);
+  it('should find process of listenning port', function () {
+    return listen(12345)
+      .then(function () {
+        return find('port', 12345)
+          .then(function (list) {
+            assert(list.length === 1);
+            assert.equal(process.pid, list[0].pid);
 
-          listen.close();
-          done();
-        }, function (err) {
-          console.error(err.stack || err);
-        })
-    });
-  })
+            listen.close();
+          }, function (err) {
+            assert(false, err.stack || err);
+
+            listen.close();
+          });
+      });
+  });
 
   it('should find process of pid', function (done) {
     let file = path.join(__dirname, 'fixtures/child_process.js');
@@ -46,7 +48,7 @@ describe('Find process test', function () {
       }, function (err) {
         assert(false, err.stack || err);
       });
-  })
+  });
 
   it('should find process list matched given name', function (done) {
     let file = path.join(__dirname, 'fixtures/child_process.js');

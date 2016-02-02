@@ -1,6 +1,7 @@
 *.log
 test/
 docs/
+example/
 examples/
 coverage/
 node_modules/

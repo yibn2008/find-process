@@ -3,11 +3,11 @@
 
 With find-process, you can:
 
-- find the process which listening specified port
+- find the process which is listening specified port
 - find the process by pid
 - find the process by given name or name pattern
 
-We have covered the difference of main OS platform, such as **Mac OSX**, **Linux**, **Windows (win32)**, so you just need to focus what you do.
+We have covered the difference of main OS platform, including **Mac OSX**, **Linux** and **Windows (win32)**.
 
 The usage is extremely easy:
 

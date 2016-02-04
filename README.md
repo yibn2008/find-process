@@ -1,4 +1,5 @@
-# find-process [![Build Status](https://travis-ci.org/yibn2008/find-process.svg?branch=master)](https://travis-ci.org/yibn2008/find-process)
+# find-process [![Build Status](https://travis-ci.org/yibn2008/find-process.svg?branch=master)](https://travis-ci.org/yibn2008/find-process) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
+
 
 With find-process, you can:
 

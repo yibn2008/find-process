@@ -5,10 +5,10 @@
 * @Last Modified time: 2016-01-24 11:03:57
 */
 
-'use strict';
+'use strict'
 
 setTimeout(function () {
   // empty
-}, 1000 * 1000);
+}, 1000 * 1000)
 
-console.log('test');
+console.log('test')

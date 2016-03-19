@@ -1,6 +1,6 @@
 {
   "name": "find-process",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "find process info by port/pid/name etc.",
   "main": "index.js",
   "scripts": {
@@ -30,7 +30,7 @@
       "/node_modules",
       "/doc",
       "/example",
-      "/test/fixtures"
+      "/test"
     ]
   },
   "author": "zoujie <yibn2008@gmail.com>",

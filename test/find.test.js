@@ -2,7 +2,7 @@
 * @Author: zoujie.wzj
 * @Date:   2016-01-24 10:35:16
 * @Last Modified by:   Zoujie
-* @Last Modified time: 2016-02-04 17:17:21
+* @Last Modified time: 2016-03-20 00:16:22
 */
 
 'use strict'
@@ -62,6 +62,13 @@ describe('Find process test', function () {
         cps.kill()
 
         assert(false, err.stack || err)
+      })
+  })
+
+  it('should resolve empty array when pid not exists', function () {
+    return find('port', 100000)
+      .then(function (list) {
+        assert(list.length === 0)
       })
   })
 })

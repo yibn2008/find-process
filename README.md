@@ -1,6 +1,5 @@
 # find-process [![Build Status](https://travis-ci.org/yibn2008/find-process.svg?branch=master)](https://travis-ci.org/yibn2008/find-process) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
-
 With find-process, you can:
 
 - find the process which is listening specified port
@@ -42,9 +41,7 @@ Usage:
 
 Example:
 
-![image](https://user-images.githubusercontent.com/4136679/28215897-2ca195d6-68e2-11e7-91c9-7b80b862acda.png)
-
-Quickly find which port is listening.
+![image](https://user-images.githubusercontent.com/4136679/28216013-933f9bf8-68e2-11e7-8ea0-04723eda3dbf.png)
 
 ## Node API
 

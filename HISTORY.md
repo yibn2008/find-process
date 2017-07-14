@@ -1,4 +1,11 @@
 
+1.1.0 / 2017-07-14
+==================
+
+  * chore: bump to 1.1.0
+  * feat: add cli bin support
+  * fix: fix issue [#2](http://github.com/yibn2008/find-process/issues/2)
+
 1.0.5 / 2016-10-13
 ==================
 

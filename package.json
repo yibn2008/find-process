@@ -5,9 +5,21 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha test/*.test.js && standard",
-    "prepublish": "npm test",
+    "lint": "standard --fix && npm-ensure -t deps",
     "release": "git release $npm_package_version && npm publish",
     "beta": "git release $npm_package_version && npm publish --tag beta"
+  },
+  "bin": {
+    "find-process": "bin/find-process.js"
+  },
+  "ensure": {
+    "deps": {
+      "checkDirs": [
+        "lib/*",
+        "bin/*",
+        "*.js"
+      ]
+    }
   },
   "repository": {
     "type": "git",
@@ -39,9 +51,14 @@
     "url": "https://github.com/yibn2008/find-process/issues"
   },
   "homepage": "https://github.com/yibn2008/find-process#readme",
-  "dependencies": {},
+  "dependencies": {
+    "chalk": "^2.0.1",
+    "commander": "^2.11.0",
+    "debug": "^2.6.8"
+  },
   "devDependencies": {
     "mocha": "^2.3.4",
+    "npm-ensure": "^1.1.2",
     "standard": "^5.4.1"
   }
 }

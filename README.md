@@ -9,8 +9,52 @@ With find-process, you can:
 
 We have covered the difference of main OS platform, including **Mac OSX**, **Linux** and **Windows (win32)**.
 
-The usage is extremely easy:
+## CLI
 
+Install find-process as a CLI tool:
+
+```
+$ npm install find-process -g
+```
+
+Usage:
+
+```
+
+  Usage: find-process [options] <keyword>
+
+
+  Options:
+
+    -V, --version      output the version number
+    -t, --type <type>  find process by keyword type (pid|port|name)
+    -p, --port         find process by port
+    -h, --help         output usage information
+
+  Examples:
+
+    $ find-process node          # find by name "node"
+    $ find-process 111           # find by pid "111"
+    $ find-process -p 80         # find by port "80"
+    $ find-process -t port 80    # find by port "80"
+
+```
+
+Example:
+
+![image](https://user-images.githubusercontent.com/4136679/28215897-2ca195d6-68e2-11e7-91c9-7b80b862acda.png)
+
+Quickly find which port is listening.
+
+## Node API
+
+You can use npm to install:
+
+```
+$ npm install find-process --save
+```
+
+Usage:
 
 ```
 const find = require('find-process');
@@ -22,16 +66,6 @@ find('pid', 12345)
     console.log(err.stack || err);
   })
 ```
-
-## Installation
-
-You can use npm to install:
-
-```
-$ npm install find-process
-```
-
-If you use find-process in you project, don't forget to add `--save` option.
 
 ## Synopsis
 

@@ -11,3 +11,6 @@ workbench/
 .travis.yml
 .jshintrc
 .jshintignore
+
+
+.justconf

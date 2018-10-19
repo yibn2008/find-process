@@ -1,8 +1,8 @@
 /*
 * @Author: zoujie.wzj
 * @Date:   2016-01-24 10:35:16
-* @Last Modified by:   Zoujie
-* @Last Modified time: 2016-03-20 00:16:22
+* @Last Modified by: Ayon Lee
+* @Last Modified on: 2018-10-19
 */
 
 'use strict'
@@ -31,44 +31,51 @@ describe('Find process test', function () {
       })
   })
 
-  it('should find process of pid', function () {
+  it('should find process of pid', function (done) {
     let file = path.join(__dirname, 'fixtures/child_process.js')
     let cps = cp.spawn(process.execPath, [file])
 
-    return find('pid', cps.pid)
+    find('pid', cps.pid)
       .then(function (list) {
         cps.kill()
 
         assert(list.length === 1)
         assert.equal(cps.pid, list[0].pid)
+        done()
       }, function (err) {
         cps.kill()
 
-        assert(false, err.stack || err)
+        done(err)
       })
   })
 
-  it('should find process list matched given name', function () {
+  it('should find process list matched given name', function (done) {
     let file = path.join(__dirname, 'fixtures/child_process.js')
     let cps = cp.spawn(process.execPath, [file, 'AAABBBCCC'])
 
-    return find('name', 'AAABBBCCC')
+    find('name', 'AAABBBCCC')
       .then(function (list) {
-        cps.kill()
 
         assert(list.length === 1)
         assert.equal(cps.pid, list[0].pid)
-      }, function (err) {
+
+        // test strict mode
+        return find('name', 'node', true)
+      }).then(function (list) {
+        for (let item of list) {
+          assert.equal(item.name, process.platform == 'win32' ? 'node.exe' : 'node');
+        }
+      }).then(() => cps.kill()).then(() => done()).catch(function (err) {
         cps.kill()
 
-        assert(false, err.stack || err)
-      })
+        done(err)
+      });
   })
 
-  it('should resolve empty array when pid not exists', function () {
-    return find('port', 100000)
+  it('should resolve empty array when pid not exists', function (done) {
+    find('port', 100000)
       .then(function (list) {
         assert(list.length === 0)
-      })
+      }).then(done).catch(err => done(err))
   })
 })

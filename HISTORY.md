@@ -1,3 +1,12 @@
+1.2.0 / 2018-10-19
+==================
+
+  * fix some bugs
+  * support `android` platform
+  * add `strict` mode when finding by `name`
+  * for `pid`, `ppid`, `uid`, `gid`, always return number
+  * add official type declaration.
+
 
 1.1.3 / 2018-08-20
 ==================

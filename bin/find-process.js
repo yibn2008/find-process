@@ -59,7 +59,7 @@ debug('find process by: type = %s, keyword = "%s"', type, keyword)
 find(type, keyword)
   .then(list => {
     if (list.length) {
-      console.log('Found %s process(es)\n', list.length)
+      console.log('Found %s process' + (list.length === 1 ? '' : 'es') + '\n', list.length)
 
       for (let item of list) {
         console.log(chalk.cyan('[%s]'), item.name || 'unknown')

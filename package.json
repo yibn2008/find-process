@@ -1,8 +1,9 @@
 {
   "name": "find-process",
-  "version": "1.1.4",
+  "version": "1.2.0",
   "description": "find process info by port/pid/name etc.",
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "test": "mocha test/*.test.js && standard",
     "lint": "standard --fix && npm-ensure -t deps",
@@ -54,7 +55,8 @@
   "dependencies": {
     "chalk": "^2.0.1",
     "commander": "^2.11.0",
-    "debug": "^2.6.8"
+    "debug": "^2.6.8",
+    "lodash": "^4.17.11"
   },
   "devDependencies": {
     "mocha": "^2.3.4",

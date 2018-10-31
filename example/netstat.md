@@ -2,7 +2,7 @@
 
 ## Mac OSX (darwin)
 
-```
+```sh
 $ netstat -anv
 Active Internet connections (including servers)
 Proto Recv-Q Send-Q  Local Address          Foreign Address        (state)     rhiwat shiwat    pid   epid
@@ -15,7 +15,7 @@ tcp46      0      0  *.8888                 *.*                    LISTEN      1
 
 ## Windows (win32)
 
-```
+```sh
 C:\Users\xxx>netstat -ano
 
 活动连接
@@ -40,7 +40,7 @@ C:\Users\xxx>netstat -ano
 
 ## Ubuntu (linux)
 
-```
+```sh
 $ sudo netstat -tunlp
 [sudo] password for xxx:
 Active Internet connections (only servers)
@@ -60,10 +60,3 @@ udp        0      0 0.0.0.0:123             0.0.0.0:*                           
 udp6       0      0 :::123                  :::*                                1103/ntpd
 udp6       0      0 :::39072                :::*                                18214/squid3
 ```
-## Sun
-
-// TODO ...
-
-## FreeBSD
-
-// TODO ...

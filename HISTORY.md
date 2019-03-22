@@ -1,4 +1,10 @@
 
+1.4.1 / 2019-03-22
+==================
+
+  * chore: bump to 1.4.1
+  * fix: fix issue [#9](http://github.com/yibn2008/find-process/issues/9)
+
 1.4.0 / 2019-03-22
 ==================
 

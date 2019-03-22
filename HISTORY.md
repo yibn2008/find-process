@@ -1,4 +1,11 @@
 
+1.3.0 / 2019-03-22
+==================
+
+  * chore: bump to 1.3.0
+  * feat: support executable path
+  * docs: add bin prop to get execute path
+
 1.2.3 / 2019-03-22
 ==================
 

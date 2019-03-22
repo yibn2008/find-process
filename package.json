@@ -6,9 +6,7 @@
   "types": "index.d.ts",
   "scripts": {
     "test": "mocha test/*.test.js && standard",
-    "lint": "standard --fix && npm-ensure -t deps",
-    "release": "git release $npm_package_version && npm publish",
-    "beta": "git release $npm_package_version && npm publish --tag beta"
+    "lint": "standard --fix && npm-ensure -t deps"
   },
   "bin": {
     "find-process": "bin/find-process.js"
@@ -55,12 +53,11 @@
   "dependencies": {
     "chalk": "^2.0.1",
     "commander": "^2.11.0",
-    "debug": "^2.6.8",
-    "lodash": "^4.17.11"
+    "debug": "^2.6.8"
   },
   "devDependencies": {
-    "mocha": "^2.3.4",
+    "mocha": "3.x",
     "npm-ensure": "^1.1.2",
-    "standard": "^5.4.1"
+    "standard": "12.x"
   }
 }

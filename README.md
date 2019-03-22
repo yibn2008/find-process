@@ -75,8 +75,7 @@ Promise<Array> find(type, value, [strict])
 
 - `type` the type of find, support: *port|pid|name*
 - `value` the value of type, can be RegExp if type is *name*
-- `strict` the optional strict mode is for checking *name* exactly matches the give one.
-  (on Windows, `.exe` can be omitted)
+- `strict` the optional strict mode is for checking *name* exactly matches the give one. (on Windows, `.exe` can be omitted)
 
 **Return**
 

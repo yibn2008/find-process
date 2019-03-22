@@ -91,6 +91,7 @@ The resolved value of promise is an array list of process (`[]` means it may be 
   uid: [user id (for *nix)],
   gid: [user group id (for *nix)],
   name: <command/process name>,
+  bin: <execute path (for *nix)>,
   cmd: <full command with args>
 }, ...]
 ```

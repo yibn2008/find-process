@@ -1,4 +1,10 @@
 
+1.4.0 / 2019-03-22
+==================
+
+  * chore: bump to 1.4.0
+  * feat: throw error when run on *nix system
+
 1.3.0 / 2019-03-22
 ==================
 

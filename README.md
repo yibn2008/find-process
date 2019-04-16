@@ -95,14 +95,6 @@ The resolved value of promise is an array list of process (`[]` means it may be 
 }, ...]
 ```
 
-### Notice
-
-Since find-process use `netstat` to find process of specified port internally, you might need `sudo` to run with find-process on Linux platform.
-
-If you use find-process in command line without sudo, the find-process will prompt a sudo password message, the find process will continue after you enter the right password.
-
-*User on Windows/Mac OSX has no such problem.*
-
 ## Example
 
 Find process which is listening port 80.

@@ -42,7 +42,7 @@ Usage:
 
 Example:
 
-![image](https://user-images.githubusercontent.com/4136679/28216013-933f9bf8-68e2-11e7-8ea0-04723eda3dbf.png)
+![image](https://user-images.githubusercontent.com/4136679/62670202-f49a6b00-b9c4-11e9-8692-7003c6c31a8a.png)
 
 ## Node API
 

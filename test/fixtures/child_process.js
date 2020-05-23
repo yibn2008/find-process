@@ -10,5 +10,3 @@
 setTimeout(function () {
   // empty
 }, 1000 * 1000)
-
-console.log('test')

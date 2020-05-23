@@ -61,7 +61,7 @@ find(type, keyword)
     if (list.length) {
       console.log('Found %s process' + (list.length === 1 ? '' : 'es') + '\n', list.length)
 
-      for (let item of list) {
+      for (const item of list) {
         console.log(chalk.cyan('[%s]'), item.name || 'unknown')
         console.log('pid: %s', chalk.white(item.pid))
         console.log('cmd: %s', chalk.white(item.cmd))

@@ -51,13 +51,13 @@
   },
   "homepage": "https://github.com/yibn2008/find-process#readme",
   "dependencies": {
-    "chalk": "^2.0.1",
-    "commander": "^2.11.0",
-    "debug": "^2.6.8"
+    "chalk": "^4.0.0",
+    "commander": "^5.1.0",
+    "debug": "^4.1.1"
   },
   "devDependencies": {
-    "mocha": "3.x",
-    "npm-ensure": "^1.1.2",
-    "standard": "12.x"
+    "mocha": "^7.2.0",
+    "npm-ensure": "^1.2.0",
+    "standard": "^14.3.4"
   }
 }

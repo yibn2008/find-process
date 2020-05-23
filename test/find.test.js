@@ -14,6 +14,7 @@ const find = require('..')
 const listen = require('./fixtures/listen_port')
 
 describe('Find process test', function () {
+  this.timeout(10000);
   it('should find process of listenning port', function () {
     return listen(12345)
       .then(function () {

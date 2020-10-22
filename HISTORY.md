@@ -1,4 +1,11 @@
 
+1.4.4 / 2020-10-22
+==================
+
+  * chore: bump to 1.4.4
+  * chore(deps): bump lodash from 4.17.15 to 4.17.20
+  * fix: Security updates, Windows unit tests
+
 1.4.3 / 2019-11-15
 ==================
 

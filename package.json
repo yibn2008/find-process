@@ -1,6 +1,6 @@
 {
   "name": "find-process",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "find process info by port/pid/name etc.",
   "main": "index.js",
   "types": "index.d.ts",

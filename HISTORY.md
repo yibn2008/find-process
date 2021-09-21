@@ -1,4 +1,12 @@
 
+1.4.5 / 2021-09-21
+==================
+
+  * chore: bump to 1.4.5
+  * fix: fix find-process
+  * chore(deps): bump path-parse from 1.0.6 to 1.0.7
+  * chore(deps): bump y18n from 4.0.0 to 4.0.1
+
 1.4.4 / 2020-10-22
 ==================
 

@@ -44,6 +44,10 @@
       "/test"
     ]
   },
+  "tnpm": {
+    "mode": "yarn",
+    "lockfile": "enable"
+  },
   "author": "zoujie <yibn2008@gmail.com>",
   "license": "MIT",
   "bugs": {

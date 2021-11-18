@@ -1,4 +1,12 @@
 
+1.4.7 / 2021-11-18
+==================
+
+  * chore: bump to 1.4.7
+  * fix: fix undefined issue [#40](http://github.com/yibn2008/find-process/issues/40)
+  * fix: fix github actions
+  * fix: fix install method
+
 1.4.6 / 2021-11-18
 ==================
 

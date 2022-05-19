@@ -4,7 +4,7 @@
 
 const program = require('commander')
 const chalk = require('chalk')
-const debug = require('debug')('find-process')
+const log = require('loglevel').getLogger('find-process')
 const find = require('..')
 const pkg = require('../package.json')
 
@@ -54,7 +54,7 @@ if (opts.port) {
   type = opts.type
 }
 
-debug('find process by: type = %s, keyword = "%s"', type, keyword)
+log.debug('find process by: type = %s, keyword = "%s"', type, keyword)
 
 find(type, keyword)
   .then(list => {

@@ -71,14 +71,16 @@ find('pid', 12345)
 ## Synopsis
 
 ```
-Promise<Array> find(type, value, [strict])
+Promise<Array> find(type, value, [options])
 ```
 
 **Arguments**
 
 - `type` the type of find, support: *port|pid|name*
 - `value` the value of type, can be RegExp if type is *name*
-- `strict` the optional strict mode is for checking *port*, *pid*, or *name* exactly matches the given one. (on Windows, `.exe` can be omitted)
+- `options` this can either be the *object* described below or *boolean* to just set strict mode
+  - `options.strict` the optional strict mode is for checking *port*, *pid*, or *name* exactly matches the given one. (on Windows, `.exe` can be omitted)
+  - `options.logLevel` set the logging level to [`trace|debug|info|warn|error`](https://github.com/pimterry/loglevel#documentation). In practice this lets you silence a netstat warning on Linux.
 
 **Return**
 
@@ -139,6 +141,16 @@ find('name', 'nginx', true)
   });
 ```
 
+Find all nginx processes on Linux without logging a warning when run as a user who isn't root.
+
+```javascript
+const find = require('find-process');
+
+find('name', 'nginx', {strict: true, logLevel: 'error'})
+  .then(function (list) {
+    console.log('there are %s nginx process(es)', list.length);
+  });
+```
 ## Contributing
 
 We're welcome to receive Pull Request of bugfix or new feature, but please check the list before sending PR:

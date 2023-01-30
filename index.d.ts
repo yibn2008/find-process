@@ -24,7 +24,7 @@ declare type Options = {
     logLevel?: LogLevelDesc;
 }
 
-declare function find(type: "name" | "pid" | "port", value: string | number | RegExp, strict?: boolean | Option): Promise<{
+declare function find(type: "name" | "pid" | "port", value: string | number | RegExp, strict?: boolean | Options): Promise<{
     pid: number;
     ppid?: number;
     uid?: number;

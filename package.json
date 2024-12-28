@@ -41,7 +41,8 @@
       "/node_modules",
       "/doc",
       "/example",
-      "/test"
+      "/test",
+      "index.d.ts"
     ]
   },
   "author": "zoujie <yibn2008@gmail.com>",

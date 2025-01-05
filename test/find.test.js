@@ -18,7 +18,8 @@ describe('Find process test', function () {
   this.timeout(10000);
 
   it('should run the bin/find-process.js', function () {
-    const result = cp.execSync('./bin/find-process.js -V').toString()
+    const binPrefix = (process.platform == 'win32' ? 'node.exe ' : '');
+    const result = cp.execSync(binPrefix + './bin/find-process.js -V').toString()
     assert.equal(result.trim(), pkg.version)
   })
 

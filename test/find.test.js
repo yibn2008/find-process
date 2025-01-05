@@ -11,10 +11,18 @@ const assert = require('assert')
 const path = require('path')
 const cp = require('child_process')
 const find = require('..')
+const pkg = require('../package.json')
 const listen = require('./fixtures/listen_port')
 
 describe('Find process test', function () {
   this.timeout(10000);
+
+  it('should run the bin/find-process.js', function () {
+    const result = cp.execSync('./bin/find-process.js -v').toString()
+    console.log(result)
+    assert.equal(result, pkg.version)
+  })
+
   it('should find process of listenning port', function () {
     return listen(12345)
       .then(function () {

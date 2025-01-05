@@ -2,7 +2,7 @@
 
 'use strict'
 
-const program = require('commander')
+const { program } = require('commander')
 const chalk = require('chalk')
 const log = require('loglevel').getLogger('find-process')
 const find = require('..')
@@ -28,6 +28,7 @@ program
     console.log('    $ find-process -t port 80    # find by port "80"')
     console.log()
   })
+  .showHelpAfterError()
   .parse(process.argv)
 
 const opts = program.opts()

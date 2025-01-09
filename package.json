@@ -54,7 +54,7 @@
   "dependencies": {
     "chalk": "~4.1.2",
     "commander": "^12.1.0",
-    "debug": "^4.4.0"
+    "loglevel": "^1.9.2"
   },
   "devDependencies": {
     "mocha": "^11.0.1",
@@ -62,7 +62,6 @@
     "standard": "^17.1.2",
     "eslint": "^9.17.0",
     "glob": "^11.0.0",
-    "loglevel": "^1.9.2",
     "rimraf": "^6.0.1"
   },
   "publishConfig": {

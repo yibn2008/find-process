@@ -14,7 +14,18 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        # Operating System Matrix
+        # ubuntu-latest: Latest Ubuntu version (currently 22.04)
+        # windows-latest: Latest Windows Server version (currently 2022)
+        # macos-12: macOS 12 Monterey (released 2021)
+        # macos-13: macOS 13 Ventura (released 2022)
+        # macos-14: macOS 14 Sonoma (released 2023)
+        # macos-15: macOS 15 Sequoia (released 2024)
+        os: [ubuntu-latest, windows-latest, macos-12, macos-13, macos-14, macos-15]
+        # Node.js Version Matrix
+        # 16: Node.js 16.x LTS (released 2020, EOL April 2024)
+        # 18: Node.js 18.x LTS (released 2022, EOL April 2025)
+        # 20: Node.js 20.x LTS (released 2023, EOL April 2026)
         node: [16, 18, 20]
 
     steps:

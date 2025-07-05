@@ -1,6 +1,7 @@
 # find-process
 
 [![Node.js CI](https://github.com/yibn2008/find-process/actions/workflows/nodejs.yml/badge.svg)](https://github.com/yibn2008/find-process/actions/workflows/nodejs.yml)
+[![npm version](https://img.shields.io/npm/v/find-process.svg)](https://www.npmjs.com/package/find-process)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue.svg)](https://www.typescriptlang.org/)
 

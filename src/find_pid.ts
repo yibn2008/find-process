@@ -1,20 +1,9 @@
-/*
-* @Author: zoujie.wzj
-* @Date:   2016-01-22 19:27:17
-* @Last Modified by: Ayon Lee
-* @Last Modified on: 2018-10-19
-*/
+import * as os from 'os'
+import * as fs from 'fs'
+import utils from './utils'
+import log from './logger'
 
-'use strict'
-
-// find pid by port
-
-const os = require('os')
-const fs = require('fs')
-const utils = require('./utils')
-const log = require('./logger')
-
-const ensureDir = (path) => new Promise((resolve, reject) => {
+const ensureDir = (path: string): Promise<void> => new Promise((resolve, reject) => {
   if (fs.existsSync(path)) {
     resolve()
   } else {
@@ -24,16 +13,16 @@ const ensureDir = (path) => new Promise((resolve, reject) => {
   }
 })
 
-const finders = {
-  darwin (port) {
+const finders: Record<string, (port: number) => Promise<number>> = {
+  darwin(port: number): Promise<number> {
     return new Promise((resolve, reject) => {
       utils.exec('netstat -anv -p TCP && netstat -anv -p UDP', function (err, stdout, stderr) {
         if (err) {
           reject(err)
         } else {
-          err = stderr.toString().trim()
-          if (err) {
-            reject(err)
+          const stderrStr = stderr.toString().trim()
+          if (stderrStr) {
+            reject(new Error(stderrStr))
             return
           }
 
@@ -72,9 +61,8 @@ const finders = {
       })
     })
   },
-  freebsd: 'darwin',
-  sunos: 'darwin',
-  linux (port) {
+
+  linux(port: number): Promise<number> {
     return new Promise((resolve, reject) => {
       const cmd = 'netstat -tunlp'
 
@@ -113,15 +101,16 @@ const finders = {
       })
     })
   },
-  win32 (port) {
+
+  win32(port: number): Promise<number> {
     return new Promise((resolve, reject) => {
       utils.exec('netstat -ano', function (err, stdout, stderr) {
         if (err) {
           reject(err)
         } else {
-          err = stderr.toString().trim()
-          if (err) {
-            reject(err)
+          const stderrStr = stderr.toString().trim()
+          if (stderrStr) {
+            reject(new Error(stderrStr))
             return
           }
 
@@ -144,7 +133,8 @@ const finders = {
       })
     })
   },
-  android (port) {
+
+  android(port: number): Promise<number> {
     return new Promise((resolve, reject) => {
       // on Android Termux, an warning will be emitted when executing `netstat`
       // with option `-p` says 'showing only processes with your user ID', but
@@ -191,21 +181,21 @@ const finders = {
   }
 }
 
-function findPidByPort (port) {
-  const platform = process.platform
+// Alias for other platforms
+finders.freebsd = finders.darwin
+finders.sunos = finders.darwin
+
+function findPidByPort(port: number): Promise<number> {
+  const platform = process.platform as keyof typeof finders
 
   return new Promise((resolve, reject) => {
     if (!(platform in finders)) {
       return reject(new Error(`platform ${platform} is unsupported`))
     }
 
-    let findPid = finders[platform]
-    if (typeof findPid === 'string') {
-      findPid = finders[findPid]
-    }
-
-    findPid(port).then(resolve, reject)
+    const finder = finders[platform]
+    finder(port).then(resolve, reject)
   })
 }
 
-module.exports = findPidByPort
+export default findPidByPort 

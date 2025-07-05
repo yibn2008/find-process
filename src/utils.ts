@@ -1,32 +1,27 @@
-/*
-* @Author: zoujie.wzj
-* @Date:   2016-01-23 18:17:55
-* @Last Modified by:   Sahel LUCAS--SAOUDI
-* @Last Modified on: 2021-11-12
-*/
-
-'use strict'
-
-const cp = require('child_process')
+import { spawn, exec, ExecOptions } from 'child_process'
+import { Utils } from './types'
 
 const UNIT_MB = 1024 * 1024
 
-const utils = {
+const utils: Utils = {
   /**
    * exec command with maxBuffer size
    */
-  exec (cmd, callback) {
-    cp.exec(cmd, {
+  exec(cmd: string, callback: (error: Error | null, stdout: string, stderr: string) => void): void {
+    const options: ExecOptions = {
       maxBuffer: 2 * UNIT_MB,
       windowsHide: true
-    }, callback)
+    }
+    exec(cmd, options, callback)
   },
+
   /**
    * spawn command
    */
-  spawn (cmd, args, options) {
-    return cp.spawn(cmd, args, options)
+  spawn(cmd: string, args: string[], options: any): any {
+    return spawn(cmd, args, options)
   },
+
   /**
    * Strip top lines of text
    *
@@ -34,7 +29,7 @@ const utils = {
    * @param  {Number} num
    * @return {String}
    */
-  stripLine (text, num) {
+  stripLine(text: string, num: number): string {
     let idx = 0
 
     while (num-- > 0) {
@@ -54,7 +49,7 @@ const utils = {
    * @param  {Number} max
    * @return {Array}
    */
-  split (line, max) {
+  split(line: string, max: number): string[] {
     const cols = line.trim().split(/\s+/)
 
     if (cols.length > max) {
@@ -89,9 +84,9 @@ const utils = {
    * @param  {Number} max   max column number of table
    * @return {Array}
    */
-  extractColumns (text, idxes, max) {
+  extractColumns(text: string, idxes: number[], max: number): string[][] {
     const lines = text.split(/(\r\n|\n|\r)/)
-    const columns = []
+    const columns: string[][] = []
 
     if (!max) {
       max = Math.max.apply(null, idxes) + 1
@@ -99,7 +94,7 @@ const utils = {
 
     lines.forEach(line => {
       const cols = utils.split(line, max)
-      const column = []
+      const column: string[] = []
 
       idxes.forEach(idx => {
         column.push(cols[idx] || '')
@@ -133,7 +128,7 @@ const utils = {
    * @param  {String} data raw table data
    * @return {Array}
    */
-  parseTable (data) {
+  parseTable(data: string): Record<string, string>[] {
     const lines = data.split(/(\r\n\r\n|\r\n\n|\n\r\n|\n\n)/).filter(line => {
       return line && line.trim().length > 0
     }).map((e) => e.split(/(\r\n|\n|\r)/).filter(line => line.trim().length > 0))
@@ -152,7 +147,7 @@ const utils = {
     })
 
     return lines.map(line => {
-      const row = {}
+      const row: Record<string, string> = {}
       line.forEach((string) => {
         const splitterIndex = string.indexOf(':')
         const key = string.slice(0, splitterIndex).trim()
@@ -164,4 +159,4 @@ const utils = {
   }
 }
 
-module.exports = utils
+export default utils 

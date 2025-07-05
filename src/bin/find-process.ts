@@ -1,21 +1,21 @@
 #!/usr/bin/env node
 
-'use strict'
+import { program } from 'commander'
+import chalk from 'chalk'
+import log from 'loglevel'
+import find from '../index'
+import pkg from '../../package.json'
 
-const { program } = require('commander')
-const chalk = require('chalk')
-const log = require('loglevel').getLogger('find-process')
-const find = require('..')
-const pkg = require('../package.json')
+const logger = log.getLogger('find-process')
 
-let type, keyword
+let type: string, keyword: string | number = ''
 
 program
   .version(pkg.version)
   .option('-t, --type <type>', 'find process by keyword type (pid|port|name)')
   .option('-p, --port', 'find process by port')
   .arguments('<keyword>')
-  .action(function (kw) {
+  .action(function (kw: string) {
     keyword = kw
   })
   .on('--help', () => {
@@ -45,7 +45,7 @@ if (opts.port) {
   type = 'port'
 } else if (!opts.type) {
   // pid or port
-  if (/^\d+$/.test(keyword)) {
+  if (/^\d+$/.test(String(keyword))) {
     type = 'pid'
     keyword = Number(keyword)
   } else {
@@ -55,10 +55,10 @@ if (opts.port) {
   type = opts.type
 }
 
-log.debug('find process by: type = %s, keyword = "%s"', type, keyword)
+logger.debug('find process by: type = %s, keyword = "%s"', type, keyword)
 
-find(type, keyword)
-  .then(list => {
+find(type as any, keyword)
+  .then((list: any[]) => {
     if (list.length) {
       console.log('Found %s process' + (list.length === 1 ? '' : 'es') + '\n', list.length)
 
@@ -71,7 +71,7 @@ find(type, keyword)
     } else {
       console.log('No process found')
     }
-  }, err => {
+  }, (err: any) => {
     console.error(chalk.red(err.stack || err))
     process.exit(1)
-  })
+  }) 

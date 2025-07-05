@@ -57,8 +57,8 @@ $ npm install find-process --save
 
 Usage:
 
-```javascript
-const find = require('find-process');
+```js
+import find from "find-process";
 
 find('pid', 12345)
   .then(function (list) {

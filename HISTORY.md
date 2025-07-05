@@ -139,3 +139,5 @@
 ==================
 
   * Initial version, support find process by port/pid/name
+
+## 2.0.0 (2025-07-05)

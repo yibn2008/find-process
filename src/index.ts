@@ -5,6 +5,5 @@
 * @Last Modified time: 2016-02-04 17:13:18
 */
 
-'use strict'
-
-module.exports = require('./lib/find')
+export { default } from './find'
+export * from './types' 

@@ -1,19 +1,11 @@
-/*
-* @Author: zoujie.wzj
-* @Date:   2016-01-23 18:18:28
-* @Last Modified by: Ayon Lee
-* @Last Modified on: 2018-10-19
-*/
-
-'use strict'
-
-const findPid = require('./find_pid')
-const findProcess = require('./find_process')
-const log = require('./logger')
+import findPidByPort from './find_pid'
+import findProcess from './find_process'
+import log from './logger'
+import { ProcessInfo, FindConfig, FindMethod } from './types'
 
 const findBy = {
-  port (port, config) {
-    return findPid(port)
+  port(port: number, config: FindConfig): Promise<ProcessInfo[]> {
+    return findPidByPort(port)
       .then(pid => {
         return findBy.pid(pid, config)
       }, () => {
@@ -21,20 +13,20 @@ const findBy = {
         return []
       })
   },
-  pid (pid, config) {
+  pid(pid: number, config: FindConfig): Promise<ProcessInfo[]> {
     return findProcess({
       pid,
       config
     })
   },
-  name (name, config) {
+  name(name: string, config: FindConfig): Promise<ProcessInfo[]> {
     return findProcess({
       name,
       config,
       skipSelf: true
     })
   }
-}
+} as Record<FindMethod, (value: string | number, config: FindConfig) => Promise<ProcessInfo[]>>
 
 /**
  * find process by condition
@@ -55,28 +47,30 @@ const findBy = {
  * @param {Boolean|Option}
  * @return {Promise}
  */
-function find (by, value, options) {
-  const config = Object.assign({
-    logLevel: 'warn',
+function find(by: FindMethod, value: string | number, options?: FindConfig | boolean): Promise<ProcessInfo[]> {
+  const config: FindConfig = Object.assign({
+    logLevel: 'warn' as const,
     strict: typeof options === 'boolean' ? options : false
-  }, options)
+  }, typeof options === 'object' ? options : {})
 
-  log.setLevel(config.logLevel)
+  if (config.logLevel) {
+    log.setLevel(config.logLevel)
+  }
 
   return new Promise((resolve, reject) => {
     if (!(by in findBy)) {
       reject(new Error(`do not support find by "${by}"`))
     } else {
-      const isNumber = /^\d+$/.test(value)
+      const isNumber = /^\d+$/.test(String(value))
       if (by === 'pid' && !isNumber) {
         reject(new Error('pid must be a number'))
       } else if (by === 'port' && !isNumber) {
         reject(new Error('port must be a number'))
       } else {
-        findBy[by](value, config).then(resolve, reject)
+        findBy[by](value as any, config).then(resolve, reject)
       }
     }
   })
 }
 
-module.exports = find
+export default find 

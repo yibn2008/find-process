@@ -1,33 +1,25 @@
-/*
-* @Author: zoujie.wzj
-* @Date:   2016-01-23 18:25:37
-* @Last Modified by: Sahel LUCAS--SAOUDI
-* @Last Modified on: 2021-11-12
-*/
+import * as path from 'path'
+import utils from './utils'
+import { ProcessInfo, FindCondition, PlatformFinder } from './types'
 
-'use strict'
-
-const path = require('path')
-const utils = require('./utils')
-
-function matchName (text, name) {
+function matchName(text: string, name: string): boolean {
   if (!name) {
     return true
   }
   // make sure text.match is valid, fix #30
   if (text && text.match) {
-    return text.match(name)
+    return text.match(name) !== null
   }
   return false
 }
 
-function fetchBin (cmd) {
+function fetchBin(cmd: string): string {
   const pieces = cmd.split(path.sep)
   const last = pieces[pieces.length - 1]
   if (last) {
     pieces[pieces.length - 1] = last.split(' ')[0]
   }
-  const fixed = []
+  const fixed: string[] = []
   for (const part of pieces) {
     const optIdx = part.indexOf(' -')
     if (optIdx >= 0) {
@@ -44,7 +36,7 @@ function fetchBin (cmd) {
   return fixed.join(path.sep)
 }
 
-function fetchName (fullpath) {
+function fetchName(fullpath: string): string {
   if (process.platform === 'darwin') {
     const idx = fullpath.indexOf('.app/')
     if (idx >= 0) {
@@ -54,11 +46,11 @@ function fetchName (fullpath) {
   return path.basename(fullpath)
 }
 
-const finders = {
-  darwin (cond) {
+const finders: Record<string, PlatformFinder> = {
+  darwin(cond: FindCondition): Promise<ProcessInfo[]> {
     return new Promise((resolve, reject) => {
-      let cmd
-      if ('pid' in cond) {
+      let cmd: string
+      if ('pid' in cond && cond.pid !== undefined) {
         cmd = `ps -p ${cond.pid} -ww -o pid,ppid,uid,gid,args`
       } else {
         cmd = 'ps ax -ww -o pid,ppid,uid,gid,args'
@@ -66,7 +58,7 @@ const finders = {
 
       utils.exec(cmd, function (err, stdout, stderr) {
         if (err) {
-          if ('pid' in cond) {
+          if ('pid' in cond && cond.pid !== undefined) {
             // when pid not exists, call `ps -p ...` will cause error, we have to
             // ignore the error and resolve with empty array
             resolve([])
@@ -74,15 +66,15 @@ const finders = {
             reject(err)
           }
         } else {
-          err = stderr.toString().trim()
-          if (err) {
-            reject(err)
+          const stderrStr = stderr.toString().trim()
+          if (stderrStr) {
+            reject(new Error(stderrStr))
             return
           }
 
           const data = utils.stripLine(stdout.toString(), 1)
           const columns = utils.extractColumns(data, [0, 1, 2, 3, 4], 5).filter(column => {
-            if (column[0] && cond.pid) {
+            if (column[0] && cond.pid !== undefined) {
               return column[0] === String(cond.pid)
             } else if (column[4] && cond.name) {
               return matchName(column[4], cond.name)
@@ -115,28 +107,26 @@ const finders = {
       })
     })
   },
-  linux: 'darwin',
-  sunos: 'darwin',
-  freebsd: 'darwin',
-  win32 (cond) {
+
+  win32(cond: FindCondition): Promise<ProcessInfo[]> {
     return new Promise((resolve, reject) => {
       const cmd = '[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-CimInstance -className win32_process | select Name,ProcessId,ParentProcessId,CommandLine,ExecutablePath'
-      const lines = []
+      const lines: string[] = []
 
       const proc = utils.spawn('powershell.exe', ['/c', cmd], { detached: false, windowsHide: true })
-      proc.stdout.on('data', data => {
+      proc.stdout.on('data', (data: Buffer) => {
         lines.push(data.toString())
       })
-      proc.on('error', err => {
+      proc.on('error', (err: Error) => {
         reject(new Error('Command \'' + cmd + '\' failed with reason: ' + err.toString()))
       })
-      proc.on('close', code => {
+      proc.on('close', (code: number) => {
         if (code !== 0) {
           return reject(new Error('Command \'' + cmd + '\' terminated with code: ' + code))
         }
         const list = utils.parseTable(lines.join(''))
           .filter(row => {
-            if ('pid' in cond) {
+            if (cond.pid !== undefined) {
               return row.ProcessId === String(cond.pid)
             } else if (cond.name) {
               const rowName = row.Name || '' // fix #40
@@ -153,8 +143,6 @@ const finders = {
           .map(row => ({
             pid: parseInt(row.ProcessId, 10),
             ppid: parseInt(row.ParentProcessId, 10),
-            // uid: void 0,
-            // gid: void 0,
             bin: row.ExecutablePath,
             name: row.Name || '',
             cmd: row.CommandLine
@@ -163,13 +151,14 @@ const finders = {
       })
     })
   },
-  android (cond) {
+
+  android(cond: FindCondition): Promise<ProcessInfo[]> {
     return new Promise((resolve, reject) => {
       const cmd = 'ps'
 
       utils.exec(cmd, function (err, stdout, stderr) {
         if (err) {
-          if ('pid' in cond) {
+          if (cond.pid !== undefined) {
             // when pid not exists, call `ps -p ...` will cause error, we have to
             // ignore the error and resolve with empty array
             resolve([])
@@ -177,15 +166,15 @@ const finders = {
             reject(err)
           }
         } else {
-          err = stderr.toString().trim()
-          if (err) {
-            reject(err)
+          const stderrStr = stderr.toString().trim()
+          if (stderrStr) {
+            reject(new Error(stderrStr))
             return
           }
 
           const data = utils.stripLine(stdout.toString(), 1)
           const columns = utils.extractColumns(data, [0, 3], 4).filter(column => {
-            if (column[0] && cond.pid) {
+            if (column[0] && cond.pid !== undefined) {
               return column[0] === String(cond.pid)
             } else if (column[1] && cond.name) {
               return matchName(column[1], cond.name)
@@ -200,12 +189,10 @@ const finders = {
 
             return {
               pid: parseInt(column[0], 10),
-              // ppid: void 0,
-              // uid: void 0,
-              // gid: void 0,
+              ppid: 0,
               name: fetchName(bin),
               bin,
-              cmd
+              cmd: column[1]
             }
           })
 
@@ -220,30 +207,20 @@ const finders = {
   }
 }
 
-function findProcess (cond) {
-  const platform = process.platform
+// Alias for other platforms
+finders.linux = finders.darwin
+finders.sunos = finders.darwin
+finders.freebsd = finders.darwin
 
-  return new Promise((resolve, reject) => {
-    if (!(platform in finders)) {
-      return reject(new Error(`platform ${platform} is unsupported`))
-    }
+function findProcess(cond: FindCondition): Promise<ProcessInfo[]> {
+  const platform = process.platform as keyof typeof finders
+  const finder = finders[platform]
 
-    let find = finders[platform]
-    if (typeof find === 'string') {
-      find = finders[find]
-    }
+  if (!finder) {
+    return Promise.reject(new Error(`Platform "${platform}" is not supported`))
+  }
 
-    find(cond).then((result) => {
-      if (cond.skipSelf) {
-        // skip find-process itself
-        const filteredResult = result.filter(item => item.pid !== process.pid)
-
-        resolve(filteredResult)
-      } else {
-        resolve(result)
-      }
-    }, reject)
-  })
+  return finder(cond)
 }
 
-module.exports = findProcess
+export default findProcess 

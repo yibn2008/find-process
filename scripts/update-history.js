@@ -2,7 +2,6 @@
 
 const fs = require('fs')
 const { execSync } = require('child_process')
-const path = require('path')
 
 // 读取 package.json
 const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'))
@@ -64,4 +63,4 @@ if (insertIndex !== -1) {
 fs.writeFileSync('HISTORY.md', lines.join('\n'))
 
 console.log(`✅ Updated HISTORY.md with version ${version}`)
-console.log(`📋 Added ${commits.length} commits to changelog`) 
+console.log(`📋 Added ${commits.length} commits to changelog`)

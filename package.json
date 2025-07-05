@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node scripts/postbuild.js",
     "dev": "tsc --watch",
     "test": "npm run build && mocha -r ts-node/register test/*.test.ts && standard",
     "lint": "standard --fix && npm-ensure -t deps",

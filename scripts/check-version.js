@@ -2,7 +2,6 @@
 
 const fs = require('fs')
 const { execSync } = require('child_process')
-const path = require('path')
 
 // 读取 package.json
 const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'))
@@ -14,7 +13,7 @@ console.log(`🔍 Checking version: ${version}`)
 try {
   const gitTags = execSync('git tag --list', { encoding: 'utf8' }).trim().split('\n')
   const versionTag = `v${version}`
-  
+
   if (gitTags.includes(versionTag)) {
     console.log(`✅ Git tag ${versionTag} exists`)
   } else {
@@ -31,7 +30,7 @@ try {
 try {
   const historyContent = fs.readFileSync('HISTORY.md', 'utf8')
   const versionPattern = new RegExp(`## ${version.replace(/\./g, '\\.')}`, 'i')
-  
+
   if (versionPattern.test(historyContent)) {
     console.log(`✅ HISTORY.md contains version ${version}`)
   } else {
@@ -59,4 +58,4 @@ try {
   process.exit(1)
 }
 
-console.log('🎉 All version checks passed!') 
+console.log('🎉 All version checks passed!')

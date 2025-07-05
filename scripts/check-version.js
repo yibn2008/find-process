@@ -12,13 +12,13 @@ console.log(`🔍 Checking version: ${version}`)
 // 检查 git tag
 try {
   const gitTags = execSync('git tag --list', { encoding: 'utf8' }).trim().split('\n')
-  const versionTag = `v${version}`
+  const versionTag = `${version}`
 
   if (gitTags.includes(versionTag)) {
     console.log(`✅ Git tag ${versionTag} exists`)
   } else {
     console.error(`❌ Git tag ${versionTag} not found!`)
-    console.error('Please create the tag with: git tag v' + version)
+    console.error('Please create the tag with: git tag ' + versionTag)
     process.exit(1)
   }
 } catch (error) {

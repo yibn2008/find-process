@@ -1,3 +1,10 @@
+## 2.0.0 (2025-07-05)
+
+- 1a64798 chore: add npm version badge
+- 30e2b00 doc: optimize README
+- 8365733 fix: remove macos 12
+- 1aaaed5 fix: fix bin permission
+- 99f42cb feat: upgrade to TS version
 
 1.4.7 / 2021-11-18
 ==================
@@ -139,5 +146,3 @@
 ==================
 
   * Initial version, support find process by port/pid/name
-
-## 2.0.0 (2025-07-05)

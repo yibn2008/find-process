@@ -56,7 +56,7 @@ const insertIndex = lines.findIndex(line => line.startsWith('## '))
 if (insertIndex !== -1) {
   lines.splice(insertIndex, 0, changelogEntry.trim())
 } else {
-  lines.push(changelogEntry.trim())
+  lines.unshift(changelogEntry.trim())
 }
 
 // 写回文件

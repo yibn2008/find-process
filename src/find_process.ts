@@ -2,7 +2,7 @@ import * as path from 'path'
 import utils from './utils'
 import { ProcessInfo, FindCondition, PlatformFinder } from './types'
 
-function matchName(text: string, name: string): boolean {
+function matchName(text: string, name: string | RegExp): boolean {
   if (!name) {
     return true
   }

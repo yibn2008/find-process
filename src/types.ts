@@ -25,7 +25,7 @@ export interface FindConfig {
  */
 export interface FindCondition {
   pid?: number
-  name?: string
+  name?: string | RegExp
   config: FindConfig
   skipSelf?: boolean
 }

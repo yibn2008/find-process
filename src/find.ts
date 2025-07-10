@@ -26,7 +26,7 @@ const findBy = {
       skipSelf: true
     })
   }
-} as Record<FindMethod, (value: string | number, config: FindConfig) => Promise<ProcessInfo[]>>
+} as Record<FindMethod, (value: string | RegExp | number, config: FindConfig) => Promise<ProcessInfo[]>>
 
 /**
  * find process by condition
@@ -47,11 +47,17 @@ const findBy = {
  * @param {Boolean|Option}
  * @return {Promise}
  */
-function find(by: FindMethod, value: string | number, options?: FindConfig | boolean): Promise<ProcessInfo[]> {
+function find(by: FindMethod, value: string | RegExp | number, options?: FindConfig | boolean): Promise<ProcessInfo[]> {
   const config: FindConfig = Object.assign({
     logLevel: 'warn' as const,
     strict: typeof options === 'boolean' ? options : false
   }, typeof options === 'object' ? options : {})
+
+  // strict is applicable only when finding by name and the value is a string,
+  // in all other cases whatever is passed is overwritten to false
+  if (by !== 'name' || typeof value !== 'string') {
+    config.strict = false;
+  }
 
   if (config.logLevel) {
     log.setLevel(config.logLevel)
@@ -67,7 +73,7 @@ function find(by: FindMethod, value: string | number, options?: FindConfig | boo
       } else if (by === 'port' && !isNumber) {
         reject(new Error('port must be a number'))
       } else {
-        findBy[by](value as any, config).then(resolve, reject)
+        findBy[by](value, config).then(resolve, reject)
       }
     }
   })

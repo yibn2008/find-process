@@ -72,6 +72,24 @@ describe('Find process test', function () {
       });
   })
 
+    it('should find process list matched given regexp', function (done) {
+    const file = path.join(__dirname, 'fixtures/child_process.js')
+    const cps: ChildProcessWithoutNullStreams = cp.spawn(process.execPath, [file, 'AAABBBCCC']);
+
+    (find as any)('name', /A{2,3}B{2,3}C{2,3}/gi)
+      .then(function (list: any[]) {
+        cps.kill()
+
+        assert(list.length === 1)
+        assert.equal(cps.pid, list[0].pid)
+        done()
+      }, function (err: any) {
+        cps.kill()
+
+        done(err)
+      })
+  })
+
   it('should resolve empty array when pid not exists', function (done) {
     (find as any)('port', 100000)
       .then(function (list: any[]) {

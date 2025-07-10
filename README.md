@@ -117,7 +117,7 @@ function find(type: 'port' | 'pid' | 'name', value: string | number, options?: F
 - `type` - The type of search, supports: `'port' | 'pid' | 'name'`
 - `value` - The value to search for. Can be RegExp if type is `'name'`
 - `options` - Optional configuration object or boolean for strict mode
-  - `options.strict` - Optional strict mode for exact matching of port, pid, or name (on Windows, `.exe` can be omitted)
+  - `options.strict` - Optional strict mode for exact matching of name (on Windows, `.exe` can be omitted)
   - `options.logLevel` - Set logging level to `'trace' | 'debug' | 'info' | 'warn' | 'error'`. Useful for silencing netstat warnings on Linux
   - `options.skipSelf` - Skip the current process when searching by name
 

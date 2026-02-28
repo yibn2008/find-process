@@ -1,3 +1,11 @@
+## 2.1.0 (2026-02-28)
+
+- feat: add `--debug` CLI flag — prints internal commands, stdout/stderr to stderr for issue reporting
+- feat: CLI now excludes its own process from search results
+- fix: remove dead `skipSelf` option from `FindConfig` and `FindCondition`
+- docs: add "Reporting Issues" section to README with debug usage guide
+- docs: add GitHub bug report issue template
+
 ## 2.0.0 (2025-07-05)
 
 - 1a64798 chore: add npm version badge

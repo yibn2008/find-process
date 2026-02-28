@@ -1,7 +1,7 @@
-import * as os from 'os'
 import * as fs from 'fs'
-import utils from './utils'
+import * as os from 'os'
 import log from './logger'
+import utils from './utils'
 
 const ensureDir = (path: string): Promise<void> => new Promise((resolve, reject) => {
   if (fs.existsSync(path)) {
@@ -53,10 +53,16 @@ const finders: Record<string, (port: number) => Promise<number>> = {
             })
 
           if (found && found[2].length) {
-            resolve(parseInt(found[2], 10))
-          } else {
-            reject(new Error(`pid of port (${port}) not found`))
-          }
+            // PID column can be "pid" or "processname:pid"
+            const pidCell = String(found[2])
+            const pidMatch = pidCell.match(/:(\d+)$/)
+            const pid = pidMatch ? parseInt(pidMatch[1], 10) : parseInt(pidCell, 10)
+            if (!isNaN(pid)) {
+              resolve(pid)
+            } 
+          } 
+
+          reject(new Error(`pid of port (${port}) not found`))
         }
       })
     })

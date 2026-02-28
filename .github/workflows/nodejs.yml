@@ -14,26 +14,22 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # Operating System Matrix
-        # ubuntu-latest: Latest Ubuntu version (currently 22.04)
-        # windows-latest: Latest Windows Server version (currently 2022)
-        # macos-13: macOS 13 Ventura (released 2022)
-        # macos-14: macOS 14 Sonoma (released 2023)
-        # macos-15: macOS 15 Sequoia (released 2024)
-        os: [ubuntu-latest, windows-latest, macos-13, macos-14, macos-15]
-        # Node.js Version Matrix
-        # 16: Node.js 16.x LTS (released 2020, EOL April 2024)
-        # 18: Node.js 18.x LTS (released 2022, EOL April 2025)
-        # 20: Node.js 20.x LTS (released 2023, EOL April 2026)
-        node: [16, 18, 20]
+        # ubuntu-latest: Ubuntu 24.04
+        # windows-latest: Windows Server 2025
+        # macos-14: macOS 14 Sonoma (M1)
+        # macos-15: macOS 15 Sequoia (M1)
+        os: [ubuntu-latest, windows-latest, macos-14, macos-15]
+        # 18: Node.js 18.x LTS (EOL April 2025)
+        # 20: Node.js 20.x LTS (EOL April 2026)
+        # 22: Node.js 22.x LTS (EOL April 2027)
+        node: [18, 20, 22]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node }}
     - run: npm install
     - run: npm run build --if-present
-    - run: chmod +x dist/bin/*.js || true
     - run: npm test

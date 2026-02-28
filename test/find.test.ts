@@ -1,7 +1,7 @@
 import assert from 'assert'
 import path from 'path'
 import cp, { ChildProcessWithoutNullStreams } from 'child_process'
-import find from '../dist/index.js'
+import find from '../dist/cjs/index.js'
 import pkg from '../package.json'
 import listen, { close } from './fixtures/listen_port'
 
@@ -10,7 +10,7 @@ describe('Find process test', function () {
 
   it('should run the bin/find-process.js', function () {
     const binPrefix = (process.platform == 'win32' ? 'node.exe ' : '');
-    const result = cp.execSync(binPrefix + './dist/bin/find-process.js -V').toString()
+    const result = cp.execSync(binPrefix + './dist/cjs/bin/find-process.js -V').toString()
     assert.equal(result.trim(), pkg.version)
   })
 
@@ -72,7 +72,7 @@ describe('Find process test', function () {
       });
   })
 
-    it('should find process list matched given regexp', function (done) {
+  it('should find process list matched given regexp', function (done) {
     const file = path.join(__dirname, 'fixtures/child_process.js')
     const cps: ChildProcessWithoutNullStreams = cp.spawn(process.execPath, [file, 'AAABBBCCC']);
 

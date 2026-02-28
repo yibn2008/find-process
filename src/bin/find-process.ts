@@ -14,6 +14,8 @@ program
   .version(pkg.version)
   .option('-t, --type <type>', 'find process by keyword type (pid|port|name)')
   .option('-p, --port', 'find process by port')
+  .option('-v, --verbose', 'print execute command')
+  .option('-d, --debug', 'print debug info for issue reporting')
   .arguments('<keyword>')
   .action(function (kw: string) {
     keyword = kw
@@ -57,8 +59,39 @@ if (opts.port) {
 
 logger.debug('find process by: type = %s, keyword = "%s"', type, keyword)
 
-find(type as any, keyword)
+const config = {
+  verbose: opts.verbose || false,
+  debug: opts.debug || false
+}
+
+const DIVIDER = '='.repeat(60) + '\n'
+
+if (config.debug) {
+  const header =
+    `[debug] Platform : ${process.platform}\n` +
+    `[debug] Node     : ${process.version}\n` +
+    `[debug] Version  : ${pkg.version}\n\n`
+
+  process.stderr.write(chalk.gray(header))
+}
+
+function printDebugFooter (): void {
+  const footer =
+    '[debug] Please copy the above output and attach it to your issue:\n' +
+    '[debug] https://github.com/yibn2008/find-process/issues\n'
+  process.stderr.write(chalk.gray(footer))
+  process.stderr.write('\n' + DIVIDER)
+}
+
+find(type as any, keyword, config)
   .then((list: any[]) => {
+    if (config.debug) {
+      printDebugFooter()
+    }
+
+    // exclude the find-process CLI process itself
+    list = list.filter(item => item.pid !== process.pid)
+
     if (list.length) {
       console.log('Found %s process' + (list.length === 1 ? '' : 'es') + '\n', list.length)
 
@@ -72,6 +105,9 @@ find(type as any, keyword)
       console.log('No process found')
     }
   }, (err: any) => {
+    if (config.debug) {
+      printDebugFooter()
+    }
     console.error(chalk.red(err.stack || err))
     process.exit(1)
-  }) 
+  })

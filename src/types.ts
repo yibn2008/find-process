@@ -17,7 +17,9 @@ export interface ProcessInfo {
 export interface FindConfig {
   logLevel?: 'error' | 'warn' | 'info' | 'debug'
   strict?: boolean
-  skipSelf?: boolean
+  verbose?: boolean
+  /** @internal */
+  debug?: boolean
 }
 
 /**
@@ -27,7 +29,6 @@ export interface FindCondition {
   pid?: number
   name?: string | RegExp
   config: FindConfig
-  skipSelf?: boolean
 }
 
 /**

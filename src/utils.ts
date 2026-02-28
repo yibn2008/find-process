@@ -1,4 +1,5 @@
 import { spawn, exec, ExecOptions } from 'child_process'
+import chalk from 'chalk'
 import { Utils } from './types'
 
 const UNIT_MB = 1024 * 1024
@@ -8,9 +9,10 @@ const utils: Utils = {
    * exec command with maxBuffer size
    */
   exec(cmd: string, callback: (error: Error | null, stdout: string, stderr: string) => void): void {
-    const options: ExecOptions = {
+    const options: ExecOptions & { encoding: 'utf8' } = {
       maxBuffer: 2 * UNIT_MB,
-      windowsHide: true
+      windowsHide: true,
+      encoding: 'utf8'
     }
     exec(cmd, options, callback)
   },
@@ -157,6 +159,15 @@ const utils: Utils = {
       return row
     })
   }
+}
+
+export function debugLog (debug: boolean, cmd: string, stdout: string, stderr: string): void {
+  if (!debug) return
+  const text =
+    `[debug] Command: ${cmd}\n` +
+    `[debug] stdout:\n${stdout.trim() || '(empty)'}\n` +
+    `[debug] stderr:\n${stderr.trim() || '(empty)'}\n\n`
+  process.stderr.write(chalk.gray(text))
 }
 
 export default utils 

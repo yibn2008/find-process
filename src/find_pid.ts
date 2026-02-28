@@ -1,7 +1,8 @@
 import * as fs from 'fs'
 import * as os from 'os'
 import log from './logger'
-import utils from './utils'
+import utils, { debugLog } from './utils'
+import { FindConfig } from './types'
 
 const ensureDir = (path: string): Promise<void> => new Promise((resolve, reject) => {
   if (fs.existsSync(path)) {
@@ -13,10 +14,12 @@ const ensureDir = (path: string): Promise<void> => new Promise((resolve, reject)
   }
 })
 
-const finders: Record<string, (port: number) => Promise<number>> = {
-  darwin(port: number): Promise<number> {
+const finders: Record<string, (port: number, config: FindConfig) => Promise<number>> = {
+  darwin(port: number, config: FindConfig): Promise<number> {
     return new Promise((resolve, reject) => {
-      utils.exec('netstat -anv -p TCP && netstat -anv -p UDP', function (err, stdout, stderr) {
+      const cmd = 'netstat -anv -p TCP && netstat -anv -p UDP'
+      utils.exec(cmd, function (err, stdout, stderr) {
+        debugLog(!!config.debug, cmd, stdout || '', stderr || '')
         if (err) {
           reject(err)
         } else {
@@ -68,11 +71,12 @@ const finders: Record<string, (port: number) => Promise<number>> = {
     })
   },
 
-  linux(port: number): Promise<number> {
+  linux(port: number, config: FindConfig): Promise<number> {
     return new Promise((resolve, reject) => {
       const cmd = 'netstat -tunlp'
 
       utils.exec(cmd, function (err, stdout, stderr) {
+        debugLog(!!config.debug, cmd, stdout || '', stderr || '')
         if (err) {
           reject(err)
         } else {
@@ -108,9 +112,11 @@ const finders: Record<string, (port: number) => Promise<number>> = {
     })
   },
 
-  win32(port: number): Promise<number> {
+  win32(port: number, config: FindConfig): Promise<number> {
     return new Promise((resolve, reject) => {
-      utils.exec('netstat -ano', function (err, stdout, stderr) {
+      const cmd = 'netstat -ano'
+      utils.exec(cmd, function (err, stdout, stderr) {
+        debugLog(!!config.debug, cmd, stdout || '', stderr || '')
         if (err) {
           reject(err)
         } else {
@@ -140,7 +146,7 @@ const finders: Record<string, (port: number) => Promise<number>> = {
     })
   },
 
-  android(port: number): Promise<number> {
+  android(port: number, config: FindConfig): Promise<number> {
     return new Promise((resolve, reject) => {
       // on Android Termux, an warning will be emitted when executing `netstat`
       // with option `-p` says 'showing only processes with your user ID', but
@@ -153,7 +159,8 @@ const finders: Record<string, (port: number) => Promise<number>> = {
       const cmd = 'netstat -tunp >> "' + file + '"'
 
       ensureDir(dir).then(() => {
-        utils.exec(cmd, () => {
+        utils.exec(cmd, (_execErr, execStdout, execStderr) => {
+          debugLog(!!config.debug, cmd, execStdout || '', execStderr || '')
           fs.readFile(file, 'utf8', (err, data) => {
             fs.unlink(file, () => { })
             if (err) {
@@ -191,7 +198,7 @@ const finders: Record<string, (port: number) => Promise<number>> = {
 finders.freebsd = finders.darwin
 finders.sunos = finders.darwin
 
-function findPidByPort(port: number): Promise<number> {
+function findPidByPort(port: number, config: FindConfig = {}): Promise<number> {
   const platform = process.platform as keyof typeof finders
 
   return new Promise((resolve, reject) => {
@@ -200,7 +207,7 @@ function findPidByPort(port: number): Promise<number> {
     }
 
     const finder = finders[platform]
-    finder(port).then(resolve, reject)
+    finder(port, config).then(resolve, reject)
   })
 }
 

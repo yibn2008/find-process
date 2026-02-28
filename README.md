@@ -42,6 +42,8 @@ Usage:
     -V, --version      output the version number
     -t, --type <type>  find process by keyword type (pid|port|name)
     -p, --port         find process by port
+    -v, --verbose      print execute command
+    -d, --debug        print debug info for issue reporting
     -h, --help         output usage information
 
   Examples:
@@ -120,6 +122,8 @@ function find(type: 'port' | 'pid' | 'name', value: string | number, options?: F
   - `options.strict` - Optional strict mode for exact matching of name (on Windows, `.exe` can be omitted)
   - `options.logLevel` - Set logging level to `'trace' | 'debug' | 'info' | 'warn' | 'error'`. Useful for silencing netstat warnings on Linux
   - `options.skipSelf` - Skip the current process when searching by name
+  - `options.verbose` - Print the internal shell command to stdout before executing
+  - `options.debug` - Write each command, its stdout, and its stderr to stderr (implies verbose)
 
 ### Return Value
 
@@ -252,6 +256,62 @@ pnpm run lint
 - `pnpm run type-check` - TypeScript type checking
 - `pnpm run check-version` - Verify version consistency
 - `pnpm run update-history` - Update HISTORY.md with recent commits
+
+## Reporting Issues
+
+If `find-process` returns unexpected results (e.g. a process is not found, or the wrong PID is returned), please attach the output of the `--debug` flag when opening a GitHub issue. This dumps the exact shell commands that were run and their raw output, which is almost always enough to diagnose the problem.
+
+### How to collect debug output
+
+Run the same command that failed, but add the `-d` / `--debug` flag:
+
+```sh
+# Example: process not found on port 3000
+find-process --debug -p 3000
+
+# Example: process name search returns nothing
+find-process --debug node
+```
+
+The output will look like this (debug lines go to stderr, results to stdout):
+
+```
+[debug] Platform : darwin
+[debug] Node     : v20.15.0
+[debug] Version  : 2.0.0
+
+[debug] Command: netstat -anv -p TCP && netstat -anv -p UDP
+[debug] stdout:
+Active Internet connections (including servers)
+...
+
+[debug] stderr:
+(empty)
+
+[debug] Command: ps -p 1234 -ww -o pid,ppid,uid,gid,args
+[debug] stdout:
+PID  PPID ...
+
+[debug] stderr:
+(empty)
+
+[debug] Please copy the above output and attach it to your issue:
+[debug] https://github.com/yibn2008/find-process/issues
+
+============================================================
+No process found
+```
+
+To capture the debug output, redirect stderr:
+
+```sh
+find-process --debug -p 3000 2>debug.txt
+```
+
+Paste the contents into the **"Debug output"** section of the [bug report template](https://github.com/yibn2008/find-process/issues/new?template=bug_report.md).
+
+> **Note:** the debug output may contain process names and listening ports from your machine.
+> Review it before sharing if you are working in a sensitive environment.
 
 ## Contributing
 

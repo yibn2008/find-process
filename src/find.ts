@@ -5,7 +5,7 @@ import { ProcessInfo, FindConfig, FindMethod } from './types'
 
 const findBy = {
   port(port: number, config: FindConfig): Promise<ProcessInfo[]> {
-    return findPidByPort(port)
+    return findPidByPort(port, config)
       .then(pid => {
         return findBy.pid(pid, config)
       }, () => {
@@ -22,8 +22,7 @@ const findBy = {
   name(name: string, config: FindConfig): Promise<ProcessInfo[]> {
     return findProcess({
       name,
-      config,
-      skipSelf: true
+      config
     })
   }
 } as Record<FindMethod, (value: string | RegExp | number, config: FindConfig) => Promise<ProcessInfo[]>>

@@ -1,5 +1,5 @@
 import * as path from 'path'
-import utils from './utils'
+import utils, { debugLog } from './utils'
 import { ProcessInfo, FindCondition, PlatformFinder } from './types'
 
 function matchName(text: string, name: string | RegExp): boolean {
@@ -56,7 +56,12 @@ const finders: Record<string, PlatformFinder> = {
         cmd = 'ps ax -ww -o pid,ppid,uid,gid,args'
       }
 
+      if (cond.config.verbose) {
+        console.info('Query command: ' + cmd)
+      }
+
       utils.exec(cmd, function (err, stdout, stderr) {
+        debugLog(!!cond.config.debug, cmd, stdout || '', stderr || '')
         if (err) {
           if ('pid' in cond && cond.pid !== undefined) {
             // when pid not exists, call `ps -p ...` will cause error, we have to
@@ -113,6 +118,10 @@ const finders: Record<string, PlatformFinder> = {
       const cmd = '[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-CimInstance -className win32_process | select Name,ProcessId,ParentProcessId,CommandLine,ExecutablePath'
       const lines: string[] = []
 
+      if (cond.config.verbose) {
+        console.info('Query command: ' + cmd)
+      }
+
       const proc = utils.spawn('powershell.exe', ['/c', cmd], { detached: false, windowsHide: true })
       proc.stdout.on('data', (data: Buffer) => {
         lines.push(data.toString())
@@ -121,6 +130,7 @@ const finders: Record<string, PlatformFinder> = {
         reject(new Error('Command \'' + cmd + '\' failed with reason: ' + err.toString()))
       })
       proc.on('close', (code: number) => {
+        debugLog(!!cond.config.debug, cmd, lines.join(''), '')
         if (code !== 0) {
           return reject(new Error('Command \'' + cmd + '\' terminated with code: ' + code))
         }
@@ -156,7 +166,12 @@ const finders: Record<string, PlatformFinder> = {
     return new Promise((resolve, reject) => {
       const cmd = 'ps'
 
+      if (cond.config.verbose) {
+        console.info('Query command: ' + cmd)
+      }
+
       utils.exec(cmd, function (err, stdout, stderr) {
+        debugLog(!!cond.config.debug, cmd, stdout || '', stderr || '')
         if (err) {
           if (cond.pid !== undefined) {
             // when pid not exists, call `ps -p ...` will cause error, we have to

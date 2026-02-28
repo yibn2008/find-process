@@ -7,12 +7,15 @@ examples/
 coverage/
 node_modules/
 workbench/
+scripts/
+.claude/
+.github/
+tsconfig*.json
+pnpm-lock.yaml
 .npmignore
 .editorconfig
 .travis.yml
 .jshintrc
 .jshintignore
-
-
 .justconf
 

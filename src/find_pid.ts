@@ -14,102 +14,181 @@ const ensureDir = (path: string): Promise<void> => new Promise((resolve, reject)
   }
 })
 
+function findPidBySs(port: number, config: FindConfig): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const cmd = 'ss -tunlp'
+    utils.exec(cmd, function (err, stdout, stderr) {
+      debugLog(!!config.debug, cmd, stdout || '', stderr || '')
+      if (err) {
+        reject(err)
+        return
+      }
+      const warn = stderr.toString().trim()
+      if (warn) {
+        log.warn(warn)
+      }
+
+      // strip header line
+      const data = utils.stripLine(stdout.toString(), 1)
+      // Columns: Netid(0) State(1) Recv-Q(2) Send-Q(3) Local Address:Port(4) Peer Address:Port(5) Process(6)
+      const columns = utils.extractColumns(data, [4, 6], 7).find(column => {
+        const matches = String(column[0]).match(/:(\d+)$/)
+        if (matches && matches[1] === String(port)) {
+          return true
+        }
+        return false
+      })
+
+      if (columns && columns[1]) {
+        const pidMatch = String(columns[1]).match(/pid=(\d+)/)
+        if (pidMatch) {
+          resolve(parseInt(pidMatch[1], 10))
+          return
+        }
+      }
+
+      reject(new Error(`pid of port (${port}) not found`))
+    })
+  })
+}
+
+function findPidByNetstatLinux(port: number, config: FindConfig): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const cmd = 'netstat -tunlp'
+
+    utils.exec(cmd, function (err, stdout, stderr) {
+      debugLog(!!config.debug, cmd, stdout || '', stderr || '')
+      if (err) {
+        reject(err)
+        return
+      }
+      const warn = stderr.toString().trim()
+      if (warn) {
+        // netstat -p ouputs warning if user is no-root
+        log.warn(warn)
+      }
+
+      // replace header
+      const data = utils.stripLine(stdout.toString(), 2)
+      const columns = utils.extractColumns(data, [3, 6], 7).find(column => {
+        const matches = String(column[0]).match(/:(\d+)$/)
+        if (matches && matches[1] === String(port)) {
+          return true
+        }
+        return false
+      })
+
+      if (columns && columns[1]) {
+        const pid = parseInt(columns[1].split('/', 1)[0], 10)
+
+        if (!isNaN(pid) && pid > 0) {
+          resolve(pid)
+          return
+        }
+      }
+
+      reject(new Error(`pid of port (${port}) not found`))
+    })
+  })
+}
+
+function findPidByNetstatDarwin(port: number, config: FindConfig): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const cmd = 'netstat -anv -p TCP && netstat -anv -p UDP'
+    utils.exec(cmd, function (err, stdout, stderr) {
+      debugLog(!!config.debug, cmd, stdout || '', stderr || '')
+      if (err) {
+        reject(err)
+        return
+      }
+      const stderrStr = stderr.toString().trim()
+      if (stderrStr) {
+        log.warn(stderrStr)
+      }
+
+      // Drop group header, e.g. "Active Internet connections"
+      const table = utils.stripLine(stdout.toString(), 1)
+      // Get the next line with the column headers
+      const headers = table.slice(0, table.indexOf('\n'))
+      // Drop the header line to get the table body
+      const body = utils.stripLine(table, 1)
+
+      // In macOS >=Sequoia, columns include `rxbytes` and `txbytes`, which
+      // shifts the PID column to index 10. Detect this with a search
+      // for rxbytes. (Parsing the headers more robustly isn't possible
+      // because some colmn names contain spaces, and others are only separated
+      // by a single space.)
+      const pidColumn = headers.indexOf('rxbytes') >= 0 ? 10 : 8
+
+      const found = utils.extractColumns(body, [0, 3, pidColumn], 10)
+        .filter(row => {
+          return !!String(row[0]).match(/^(udp|tcp)/)
+        })
+        .find(row => {
+          const matches = String(row[1]).match(/\.(\d+)$/)
+          if (matches && matches[1] === String(port)) {
+            return true
+          }
+          return false
+        })
+
+      if (found && found[2].length) {
+        // PID column can be "pid" or "processname:pid"
+        const pidCell = String(found[2])
+        const pidMatch = pidCell.match(/:(\d+)$/)
+        const pid = pidMatch ? parseInt(pidMatch[1], 10) : parseInt(pidCell, 10)
+        if (!isNaN(pid)) {
+          resolve(pid)
+          return
+        }
+      }
+
+      reject(new Error(`pid of port (${port}) not found`))
+    })
+  })
+}
+
+function findPidByLsof(port: number, config: FindConfig): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const cmd = `lsof -nP -i :${port}`
+    utils.exec(cmd, function (err, stdout, stderr) {
+      debugLog(!!config.debug, cmd, stdout || '', stderr || '')
+      if (err) {
+        reject(err)
+        return
+      }
+      const warn = stderr.toString().trim()
+      if (warn) {
+        log.warn(warn)
+      }
+
+      // strip header line
+      const data = utils.stripLine(stdout.toString(), 1)
+      // lsof columns: COMMAND(0) PID(1) USER(2) ...
+      const columns = utils.extractColumns(data, [1], 2)
+      for (const col of columns) {
+        const pid = parseInt(col[0], 10)
+        if (!isNaN(pid) && pid > 0) {
+          resolve(pid)
+          return
+        }
+      }
+
+      reject(new Error(`pid of port (${port}) not found`))
+    })
+  })
+}
+
 const finders: Record<string, (port: number, config: FindConfig) => Promise<number>> = {
   darwin(port: number, config: FindConfig): Promise<number> {
-    return new Promise((resolve, reject) => {
-      const cmd = 'netstat -anv -p TCP && netstat -anv -p UDP'
-      utils.exec(cmd, function (err, stdout, stderr) {
-        debugLog(!!config.debug, cmd, stdout || '', stderr || '')
-        if (err) {
-          reject(err)
-        } else {
-          const stderrStr = stderr.toString().trim()
-          if (stderrStr) {
-            reject(new Error(stderrStr))
-            return
-          }
-
-          // Drop group header, e.g. "Active Internet connections"
-          const table = utils.stripLine(stdout.toString(), 1)
-          // Get the next line with the column headers
-          const headers = table.slice(0, table.indexOf('\n'))
-          // Drop the header line to get the table body
-          const body = utils.stripLine(table, 1)
-
-          // In macOS >=Sequoia, columns include `rxbytes` and `txbytes`, which
-          // shifts the PID column to index 10. Detect this with a search
-          // for rxbytes. (Parsing the headers more robustly isn't possible
-          // because some colmn names contain spaces, and others are only separated
-          // by a single space.)
-          const pidColumn = headers.indexOf('rxbytes') >= 0 ? 10 : 8
-
-          const found = utils.extractColumns(body, [0, 3, pidColumn], 10)
-            .filter(row => {
-              return !!String(row[0]).match(/^(udp|tcp)/)
-            })
-            .find(row => {
-              const matches = String(row[1]).match(/\.(\d+)$/)
-              if (matches && matches[1] === String(port)) {
-                return true
-              }
-              return false
-            })
-
-          if (found && found[2].length) {
-            // PID column can be "pid" or "processname:pid"
-            const pidCell = String(found[2])
-            const pidMatch = pidCell.match(/:(\d+)$/)
-            const pid = pidMatch ? parseInt(pidMatch[1], 10) : parseInt(pidCell, 10)
-            if (!isNaN(pid)) {
-              resolve(pid)
-            } 
-          } 
-
-          reject(new Error(`pid of port (${port}) not found`))
-        }
-      })
-    })
+    return findPidByNetstatDarwin(port, config)
+      .catch(() => findPidByLsof(port, config))
   },
 
   linux(port: number, config: FindConfig): Promise<number> {
-    return new Promise((resolve, reject) => {
-      const cmd = 'netstat -tunlp'
-
-      utils.exec(cmd, function (err, stdout, stderr) {
-        debugLog(!!config.debug, cmd, stdout || '', stderr || '')
-        if (err) {
-          reject(err)
-        } else {
-          const warn = stderr.toString().trim()
-          if (warn) {
-            // netstat -p ouputs warning if user is no-root
-            log.warn(warn)
-          }
-
-          // replace header
-          const data = utils.stripLine(stdout.toString(), 2)
-          const columns = utils.extractColumns(data, [3, 6], 7).find(column => {
-            const matches = String(column[0]).match(/:(\d+)$/)
-            if (matches && matches[1] === String(port)) {
-              return true
-            }
-            return false
-          })
-
-          if (columns && columns[1]) {
-            const pid = columns[1].split('/', 1)[0]
-
-            if (pid.length) {
-              resolve(parseInt(pid, 10))
-            } else {
-              reject(new Error(`pid of port (${port}) not found`))
-            }
-          } else {
-            reject(new Error(`pid of port (${port}) not found`))
-          }
-        }
-      })
-    })
+    return findPidBySs(port, config)
+      .catch(() => findPidByNetstatLinux(port, config))
+      .catch(() => findPidByLsof(port, config))
   },
 
   win32(port: number, config: FindConfig): Promise<number> {

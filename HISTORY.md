@@ -1,15 +1,9 @@
 ## 2.1.1 (2026-03-17)
 
-- feat: add `ss`/`lsof` fallback chain for port-to-PID lookup
-- fix: resolve Windows UDP ports to PID correctly
-- fix: add debug logging for fallback chain and improve test coverage
-- refactor: simplify `debugLog` API to accept config object directly
-- refactor: use `debugLog` instead of `log.warn` for fallback messages
-- refactor: simplify `find_pid` with `execCmd` and `matchPort` helpers
-- test: add UDP integration test and parameterize port tests
-- chore: update dependencies, fix security vulnerabilities (serialize-javascript, diff)
-- chore: remove unused devDependencies (eslint, glob)
-- chore: update .npmignore to exclude dev/config files from package
+- feat: add `ss`/`lsof` fallback chain for port-to-PID lookup on Linux
+- fix: resolve Windows UDP ports to PID correctly, improve fallback debug logging
+- refactor: simplify `debugLog` API, `find_pid` helpers, and fallback messages
+- chore: update dependencies, fix security vulnerabilities, clean up unused devDeps
 
 ## 2.1.0 (2026-02-28)
 

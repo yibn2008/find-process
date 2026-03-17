@@ -163,13 +163,22 @@ function findPidByLsof(port: number, config: FindConfig): Promise<number> {
 const finders: Record<string, (port: number, config: FindConfig) => Promise<number>> = {
   darwin(port: number, config: FindConfig): Promise<number> {
     return findPidByNetstatDarwin(port, config)
-      .catch(() => findPidByLsof(port, config))
+      .catch((err) => {
+        if (config.debug) log.warn(`netstat failed: ${err.message}, falling back to lsof`)
+        return findPidByLsof(port, config)
+      })
   },
 
   linux(port: number, config: FindConfig): Promise<number> {
     return findPidBySs(port, config)
-      .catch(() => findPidByNetstatLinux(port, config))
-      .catch(() => findPidByLsof(port, config))
+      .catch((err) => {
+        if (config.debug) log.warn(`ss failed: ${err.message}, falling back to netstat`)
+        return findPidByNetstatLinux(port, config)
+      })
+      .catch((err) => {
+        if (config.debug) log.warn(`netstat failed: ${err.message}, falling back to lsof`)
+        return findPidByLsof(port, config)
+      })
   },
 
   win32(port: number, config: FindConfig): Promise<number> {

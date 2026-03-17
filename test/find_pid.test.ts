@@ -1,4 +1,7 @@
 import assert from 'assert'
+import * as fs from 'fs'
+import * as os from 'os'
+import * as path from 'path'
 import utils from '../src/utils'
 import findPidByPort from '../src/find_pid'
 
@@ -196,6 +199,71 @@ describe('findPidByPort fallback logic', function () {
         'netstat -ano': { stdout: NETSTAT_WIN32_HDR + '  TCP    0.0.0.0:8080   0.0.0.0:0   LISTENING   5555\r\n' }
       })
       return assert.rejects(findPidByPort(3000))
+    })
+  })
+
+  describe('Android', function () {
+    const NETSTAT_ANDROID_HDR =
+      'Active Internet connections (only servers)\n' +
+      'Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name\n'
+
+    // Android finder writes netstat output to a tmpfile then reads it back.
+    // We mock utils.exec to write the desired content to that file.
+    function mockAndroidExec(fileContent: string) {
+      const dir = os.tmpdir() + '/.find-process'
+      const file = path.join(dir, String(process.pid))
+      fs.mkdirSync(dir, { recursive: true })
+      utils.exec = function (cmd: string, callback: ExecCallback) {
+        if (cmd.includes('netstat -tunp')) {
+          fs.writeFileSync(file, fileContent)
+          callback(null, '', '')
+        } else {
+          callback(new Error(`Command not mocked: ${cmd}`), '', '')
+        }
+      } as any
+    }
+
+    beforeEach(function () { setPlatform('android') })
+
+    it('netstat -tunp succeeds via tmpfile', function () {
+      const output = NETSTAT_ANDROID_HDR + 'tcp   0   0 0.0.0.0:3000   0.0.0.0:*   LISTEN   1234/node\n'
+      mockAndroidExec(output)
+      return findPidByPort(3000).then(pid => assert.strictEqual(pid, 1234))
+    })
+
+    it('no match → rejects', function () {
+      const output = NETSTAT_ANDROID_HDR + 'tcp   0   0 0.0.0.0:8080   0.0.0.0:*   LISTEN   5555/node\n'
+      mockAndroidExec(output)
+      return assert.rejects(findPidByPort(3000))
+    })
+
+    it('pid is dash (no permission) → rejects', function () {
+      const output = NETSTAT_ANDROID_HDR + 'tcp   0   0 0.0.0.0:3000   0.0.0.0:*   LISTEN   -\n'
+      mockAndroidExec(output)
+      return assert.rejects(findPidByPort(3000))
+    })
+  })
+
+  describe('Platform aliases', function () {
+    it('freebsd uses darwin finder', function () {
+      setPlatform('freebsd')
+      mockExec({
+        'netstat -anv': { stdout: NETSTAT_DARWIN_HDR + 'tcp4   0   0  *.3000   *.*   LISTEN   131072 131072   2222   0\n' }
+      })
+      return findPidByPort(3000).then(pid => assert.strictEqual(pid, 2222))
+    })
+
+    it('sunos uses darwin finder', function () {
+      setPlatform('sunos')
+      mockExec({
+        'netstat -anv': { stdout: NETSTAT_DARWIN_HDR + 'tcp4   0   0  *.3000   *.*   LISTEN   131072 131072   3333   0\n' }
+      })
+      return findPidByPort(3000).then(pid => assert.strictEqual(pid, 3333))
+    })
+
+    it('unsupported platform → rejects', function () {
+      setPlatform('aix')
+      return assert.rejects(findPidByPort(3000), /unsupported/)
     })
   })
 })

@@ -22,22 +22,22 @@ importers:
         specifier: ^10.0.10
         version: 10.0.10
       '@types/node':
-        specifier: ^24.10.1
+        specifier: ^24.0.10
         version: 24.10.1
       eslint:
-        specifier: ^9.39.1
+        specifier: ^9.30.1
         version: 9.39.1
       glob:
         specifier: ^13.0.0
         version: 13.0.0
       mocha:
-        specifier: ^11.7.5
+        specifier: ^11.7.1
         version: 11.7.5
       npm-ensure:
         specifier: ^1.3.0
         version: 1.3.0
       rimraf:
-        specifier: ^6.1.2
+        specifier: ^6.0.1
         version: 6.1.2
       standard:
         specifier: ^17.1.2
@@ -46,7 +46,7 @@ importers:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@24.10.1)(typescript@5.9.3)
       typescript:
-        specifier: ^5.9.3
+        specifier: ^5.8.3
         version: 5.9.3
 
 packages:
@@ -778,6 +778,7 @@ packages:
 
   glob@10.5.0:
     resolution: {integrity: sha512-DfXN8DfhJ7NH3Oe7cFmu3NCu1wKbkReJ8TorzSAFbSKrlNaQSKfIzqYqVY8zlbs2NLBbWpRiU52GX2PbaBVNkg==}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@13.0.0:
@@ -786,7 +787,7 @@ packages:
 
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   globals@13.24.0:
     resolution: {integrity: sha512-AhO5QUcj8llrbG09iWhPU2B204J1xnPeL8kQmVorSsy+Sjj1sk8gIyh6cUocGmH4L0UuhAJy+hJMRA4mgA4mFQ==}

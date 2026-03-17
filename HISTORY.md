@@ -1,33 +1,15 @@
 ## 2.1.1 (2026-03-17)
 
-### Added
-
 - feat: add `ss`/`lsof` fallback chain for port-to-PID lookup
-
-### Fixed
-
 - fix: resolve Windows UDP ports to PID correctly
 - fix: add debug logging for fallback chain and improve test coverage
-- fix: remove accidentally added package-lock file
-
-### Changed
-
 - refactor: simplify `debugLog` API to accept config object directly
 - refactor: use `debugLog` instead of `log.warn` for fallback messages
 - refactor: simplify `find_pid` with `execCmd` and `matchPort` helpers
-
-### Tests
-
 - test: add UDP integration test and parameterize port tests
-
-### Chores
-
-- chore: update dependencies (commander, @types/node, mocha, rimraf, typescript)
-- chore: fix HIGH severity RCE vulnerability in serialize-javascript (via mocha)
-- chore: fix LOW severity DoS vulnerability in diff (via mocha)
+- chore: update dependencies, fix security vulnerabilities (serialize-javascript, diff)
 - chore: remove unused devDependencies (eslint, glob)
 - chore: update .npmignore to exclude dev/config files from package
-- chore: bump flatted from 3.3.3 to 3.4.1
 
 ## 2.1.0 (2026-02-28)
 

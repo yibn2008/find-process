@@ -1,3 +1,10 @@
+## 2.1.1 (2026-03-17)
+
+- chore: update dependencies (commander, @types/node, mocha, rimraf, typescript)
+- fix: resolve HIGH severity RCE vulnerability in serialize-javascript (via mocha)
+- fix: resolve LOW severity DoS vulnerability in diff (via mocha)
+- chore: remove unused devDependencies (eslint, glob)
+
 ## 2.1.0 (2026-02-28)
 
 - feat: add `--debug` CLI flag — prints internal commands, stdout/stderr to stderr for issue reporting

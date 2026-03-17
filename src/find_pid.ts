@@ -20,7 +20,7 @@ const ensureDir = (path: string): Promise<void> => new Promise((resolve, reject)
 function execCmd(cmd: string, config: FindConfig): Promise<{ stdout: string, stderr: string }> {
   return new Promise((resolve, reject) => {
     utils.exec(cmd, function (err, stdout, stderr) {
-      debugLog(!!config.debug, cmd, stdout || '', stderr || '')
+      debugLog(config, cmd, stdout || '', stderr || '')
       if (err) {
         reject(err)
       } else {
@@ -164,7 +164,7 @@ const finders: Record<string, (port: number, config: FindConfig) => Promise<numb
   darwin(port: number, config: FindConfig): Promise<number> {
     return findPidByNetstatDarwin(port, config)
       .catch((err) => {
-        debugLog(!!config.debug, `netstat failed, falling back to lsof`, err.message, '')
+        debugLog(config, `netstat failed (${err.message}), falling back to lsof`)
         return findPidByLsof(port, config)
       })
   },
@@ -172,11 +172,11 @@ const finders: Record<string, (port: number, config: FindConfig) => Promise<numb
   linux(port: number, config: FindConfig): Promise<number> {
     return findPidBySs(port, config)
       .catch((err) => {
-        debugLog(!!config.debug, `ss failed, falling back to netstat`, err.message, '')
+        debugLog(config, `ss failed (${err.message}), falling back to netstat`)
         return findPidByNetstatLinux(port, config)
       })
       .catch((err) => {
-        debugLog(!!config.debug, `netstat failed, falling back to lsof`, err.message, '')
+        debugLog(config, `netstat failed (${err.message}), falling back to lsof`)
         return findPidByLsof(port, config)
       })
   },
@@ -222,7 +222,7 @@ const finders: Record<string, (port: number, config: FindConfig) => Promise<numb
 
       ensureDir(dir).then(() => {
         utils.exec(cmd, (_execErr, execStdout, execStderr) => {
-          debugLog(!!config.debug, cmd, execStdout || '', execStderr || '')
+          debugLog(config, cmd, execStdout || '', execStderr || '')
           fs.readFile(file, 'utf8', (err, data) => {
             fs.unlink(file, () => { })
             if (err) {

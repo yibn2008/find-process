@@ -184,6 +184,13 @@ describe('findPidByPort fallback logic', function () {
       return assert.rejects(findPidByPort(3000), /access denied/)
     })
 
+    it('netstat -ano UDP (no State column)', function () {
+      mockExec({
+        'netstat -ano': { stdout: NETSTAT_WIN32_HDR + '  UDP    0.0.0.0:3000   *:*   4444\r\n' }
+      })
+      return findPidByPort(3000).then(pid => assert.strictEqual(pid, 4444))
+    })
+
     it('netstat -ano no match → rejects', function () {
       mockExec({
         'netstat -ano': { stdout: NETSTAT_WIN32_HDR + '  TCP    0.0.0.0:8080   0.0.0.0:0   LISTENING   5555\r\n' }

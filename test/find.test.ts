@@ -4,6 +4,7 @@ import cp, { ChildProcessWithoutNullStreams } from 'child_process'
 import find from '../dist/cjs/index.js'
 import pkg from '../package.json'
 import listen, { close } from './fixtures/listen_port'
+import listenUdp, { close as closeUdp } from './fixtures/listen_port_udp'
 
 describe('Find process test', function () {
   this.timeout(10000);
@@ -14,22 +15,27 @@ describe('Find process test', function () {
     assert.equal(result.trim(), pkg.version)
   })
 
-  it('should find process of listenning port', function () {
-    return listen(12345)
-      .then(function () {
-        return (find as any)('port', 12345)
-          .then(function (list: any[]) {
-            close()
+  for (const { protocol, start, stop, port } of [
+    { protocol: 'TCP', start: listen, stop: close, port: 12345 },
+    { protocol: 'UDP', start: listenUdp, stop: closeUdp, port: 12346 }
+  ] as const) {
+    it(`should find process of listening ${protocol} port`, function () {
+      return start(port)
+        .then(function () {
+          return (find as any)('port', port)
+            .then(function (list: any[]) {
+              stop()
 
-            assert(list.length === 1)
-            assert.equal(process.pid, list[0].pid)
-          }, function (err: any) {
-            close()
+              assert(list.length === 1)
+              assert.equal(process.pid, list[0].pid)
+            }, function (err: any) {
+              stop()
 
-            assert(false, err.stack || err)
-          })
-      })
-  })
+              assert(false, err.stack || err)
+            })
+        })
+    })
+  }
 
   it('should find process of pid', function (done) {
     const file = path.join(__dirname, 'fixtures/child_process.js')

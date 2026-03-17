@@ -38,6 +38,10 @@ function matchPort(column: string[], port: number): boolean {
   return matches != null && matches[1] === String(port)
 }
 
+function isValidPid(pid: number): boolean {
+  return !isNaN(pid) && pid > 0
+}
+
 function findPidBySs(port: number, config: FindConfig): Promise<number> {
   return execCmd('ss -tunlp', config).then(({ stdout, stderr }) => {
     if (stderr) {
@@ -53,7 +57,10 @@ function findPidBySs(port: number, config: FindConfig): Promise<number> {
     if (columns && columns[1]) {
       const pidMatch = String(columns[1]).match(/pid=(\d+)/)
       if (pidMatch) {
-        return parseInt(pidMatch[1], 10)
+        const pid = parseInt(pidMatch[1], 10)
+        if (isValidPid(pid)) {
+          return pid
+        }
       }
     }
 
@@ -76,7 +83,7 @@ function findPidByNetstatLinux(port: number, config: FindConfig): Promise<number
     if (columns && columns[1]) {
       const pid = parseInt(columns[1].split('/', 1)[0], 10)
 
-      if (!isNaN(pid)) {
+      if (isValidPid(pid)) {
         return pid
       }
     }
@@ -122,7 +129,7 @@ function findPidByNetstatDarwin(port: number, config: FindConfig): Promise<numbe
       const pidCell = String(found[2])
       const pidMatch = pidCell.match(/:(\d+)$/)
       const pid = pidMatch ? parseInt(pidMatch[1], 10) : parseInt(pidCell, 10)
-      if (!isNaN(pid)) {
+      if (isValidPid(pid)) {
         return pid
       }
     }
@@ -144,7 +151,7 @@ function findPidByLsof(port: number, config: FindConfig): Promise<number> {
 
     for (const col of columns) {
       const pid = parseInt(col[0], 10)
-      if (!isNaN(pid)) {
+      if (isValidPid(pid)) {
         return pid
       }
     }
@@ -173,11 +180,19 @@ const finders: Record<string, (port: number, config: FindConfig) => Promise<numb
 
       // replace header
       const data = utils.stripLine(stdout, 4)
-      const columns = utils.extractColumns(data, [1, 4], 5)
+      // Extract address(1), and both possible PID positions:
+      // TCP has State at index 3, PID at index 4 (5 columns)
+      // UDP has no State column, PID at index 3 (4 columns)
+      const columns = utils.extractColumns(data, [1, 3, 4], 5)
         .find(column => matchPort(column, port))
 
-      if (columns && columns[1].length && parseInt(columns[1], 10) > 0) {
-        return parseInt(columns[1], 10)
+      if (columns) {
+        // TCP: PID at index 4 → columns[2]; UDP: PID at index 3 → columns[1]
+        const pidStr = columns[2] !== '' ? columns[2] : columns[1]
+        const pid = parseInt(pidStr, 10)
+        if (isValidPid(pid)) {
+          return pid
+        }
       }
 
       throw new Error(`pid of port (${port}) not found`)
@@ -209,10 +224,10 @@ const finders: Record<string, (port: number, config: FindConfig) => Promise<numb
                 .find(column => matchPort(column, port))
 
               if (columns && columns[1]) {
-                const pid = columns[1].split('/', 1)[0]
+                const pid = parseInt(columns[1].split('/', 1)[0], 10)
 
-                if (pid.length) {
-                  resolve(parseInt(pid, 10))
+                if (isValidPid(pid)) {
+                  resolve(pid)
                 } else {
                   reject(new Error(`pid of port (${port}) not found`))
                 }

@@ -61,7 +61,7 @@ const finders: Record<string, PlatformFinder> = {
       }
 
       utils.exec(cmd, function (err, stdout, stderr) {
-        debugLog(!!cond.config.debug, cmd, stdout || '', stderr || '')
+        debugLog(cond.config, cmd, stdout || '', stderr || '')
         if (err) {
           if ('pid' in cond && cond.pid !== undefined) {
             // when pid not exists, call `ps -p ...` will cause error, we have to
@@ -130,7 +130,7 @@ const finders: Record<string, PlatformFinder> = {
         reject(new Error('Command \'' + cmd + '\' failed with reason: ' + err.toString()))
       })
       proc.on('close', (code: number) => {
-        debugLog(!!cond.config.debug, cmd, lines.join(''), '')
+        debugLog(cond.config, cmd, lines.join(''), '')
         if (code !== 0) {
           return reject(new Error('Command \'' + cmd + '\' terminated with code: ' + code))
         }
@@ -171,7 +171,7 @@ const finders: Record<string, PlatformFinder> = {
       }
 
       utils.exec(cmd, function (err, stdout, stderr) {
-        debugLog(!!cond.config.debug, cmd, stdout || '', stderr || '')
+        debugLog(cond.config, cmd, stdout || '', stderr || '')
         if (err) {
           if (cond.pid !== undefined) {
             // when pid not exists, call `ps -p ...` will cause error, we have to

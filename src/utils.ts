@@ -161,12 +161,14 @@ const utils: Utils = {
   }
 }
 
-export function debugLog (debug: boolean, cmd: string, stdout: string, stderr: string): void {
-  if (!debug) return
-  const text =
-    `[debug] Command: ${cmd}\n` +
-    `[debug] stdout:\n${stdout.trim() || '(empty)'}\n` +
-    `[debug] stderr:\n${stderr.trim() || '(empty)'}\n\n`
+export function debugLog (config: { debug?: boolean }, msg: string, stdout?: string, stderr?: string): void {
+  if (!config.debug) return
+  let text = `[debug] ${msg}\n`
+  if (stdout !== undefined || stderr !== undefined) {
+    text += `[debug] stdout:\n${(stdout || '').trim() || '(empty)'}\n` +
+      `[debug] stderr:\n${(stderr || '').trim() || '(empty)'}\n`
+  }
+  text += '\n'
   process.stderr.write(chalk.gray(text))
 }
 

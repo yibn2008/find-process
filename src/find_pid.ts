@@ -164,7 +164,7 @@ const finders: Record<string, (port: number, config: FindConfig) => Promise<numb
   darwin(port: number, config: FindConfig): Promise<number> {
     return findPidByNetstatDarwin(port, config)
       .catch((err) => {
-        if (config.debug) log.warn(`netstat failed: ${err.message}, falling back to lsof`)
+        debugLog(!!config.debug, `netstat failed, falling back to lsof`, err.message, '')
         return findPidByLsof(port, config)
       })
   },
@@ -172,11 +172,11 @@ const finders: Record<string, (port: number, config: FindConfig) => Promise<numb
   linux(port: number, config: FindConfig): Promise<number> {
     return findPidBySs(port, config)
       .catch((err) => {
-        if (config.debug) log.warn(`ss failed: ${err.message}, falling back to netstat`)
+        debugLog(!!config.debug, `ss failed, falling back to netstat`, err.message, '')
         return findPidByNetstatLinux(port, config)
       })
       .catch((err) => {
-        if (config.debug) log.warn(`netstat failed: ${err.message}, falling back to lsof`)
+        debugLog(!!config.debug, `netstat failed, falling back to lsof`, err.message, '')
         return findPidByLsof(port, config)
       })
   },

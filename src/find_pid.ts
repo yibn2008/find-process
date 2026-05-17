@@ -42,6 +42,18 @@ function isValidPid(pid: number): boolean {
   return !isNaN(pid) && pid > 0
 }
 
+/**
+ * Sanitize port input to prevent command injection.
+ * Ensures the value is a valid integer 0-65535.
+ */
+function sanitizePort(port: number | string): number {
+  const num = parseInt(String(port), 10)
+  if (isNaN(num) || num < 0 || num > 65535) {
+    throw new Error(`Invalid port value: ${port}`)
+  }
+  return num
+}
+
 function findPidBySs(port: number, config: FindConfig): Promise<number> {
   return execCmd('ss -tunlp', config).then(({ stdout, stderr }) => {
     if (stderr) {
@@ -139,7 +151,8 @@ function findPidByNetstatDarwin(port: number, config: FindConfig): Promise<numbe
 }
 
 function findPidByLsof(port: number, config: FindConfig): Promise<number> {
-  return execCmd(`lsof -nP -i :${port}`, config).then(({ stdout, stderr }) => {
+  const safePort = sanitizePort(port)
+  return execCmd(`lsof -nP -i :${safePort}`, config).then(({ stdout, stderr }) => {
     if(stderr) {
       log.warn(stderr)
     }
@@ -258,13 +271,16 @@ finders.sunos = finders.darwin
 function findPidByPort(port: number, config: FindConfig = {}): Promise<number> {
   const platform = process.platform as keyof typeof finders
 
+  // Defense-in-depth: sanitize port at the entry point
+  const safePort = sanitizePort(port)
+
   return new Promise((resolve, reject) => {
     if (!(platform in finders)) {
       return reject(new Error(`platform ${platform} is unsupported`))
     }
 
     const finder = finders[platform]
-    finder(port, config).then(resolve, reject)
+    finder(safePort, config).then(resolve, reject)
   })
 }
 

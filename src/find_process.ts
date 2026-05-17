@@ -51,7 +51,12 @@ const finders: Record<string, PlatformFinder> = {
     return new Promise((resolve, reject) => {
       let cmd: string
       if ('pid' in cond && cond.pid !== undefined) {
-        cmd = `ps -p ${cond.pid} -ww -o pid,ppid,uid,gid,args`
+        const safePid = parseInt(String(cond.pid), 10)
+        if (isNaN(safePid) || safePid <= 0) {
+          reject(new Error(`Invalid pid: ${cond.pid}`))
+          return
+        }
+        cmd = `ps -p ${safePid} -ww -o pid,ppid,uid,gid,args`
       } else {
         cmd = 'ps ax -ww -o pid,ppid,uid,gid,args'
       }

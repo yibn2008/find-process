@@ -139,6 +139,10 @@ function findPidByNetstatDarwin(port: number, config: FindConfig): Promise<numbe
 }
 
 function findPidByLsof(port: number, config: FindConfig): Promise<number> {
+  // Validate port to prevent command injection
+  if (!Number.isInteger(port) || port < 0 || port > 65535) {
+    return Promise.reject(new Error(`Invalid port number: ${port}`))
+  }
   return execCmd(`lsof -nP -i :${port}`, config).then(({ stdout, stderr }) => {
     if(stderr) {
       log.warn(stderr)

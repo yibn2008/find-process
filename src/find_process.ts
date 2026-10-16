@@ -122,7 +122,7 @@ const finders: Record<string, PlatformFinder> = {
         console.info('Query command: ' + cmd)
       }
 
-      const proc = utils.spawn('powershell.exe', ['/c', cmd], { detached: false, windowsHide: true })
+      const proc = utils.spawn('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', cmd], { detached: false, windowsHide: true })
       proc.stdout.on('data', (data: Buffer) => {
         lines.push(data.toString())
       })
